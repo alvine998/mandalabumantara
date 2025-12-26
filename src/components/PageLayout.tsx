@@ -32,13 +32,16 @@ export default function PageLayout({
   };
 
   return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} min-h-screen ${backgroundClasses[background]}`}
-      data-swup
-    >
-      <Navigation activePage={activePage} />
-      {children}
-      <Footer />
+    <div className={`${geistSans.variable} ${geistMono.variable} min-h-screen ${backgroundClasses[background]}`}>
+      <div>
+        <Navigation />
+      </div>
+      <main data-swup>
+        {children}
+      </main>
+      <div>
+        <Footer />
+      </div>
     </div>
   );
 }
