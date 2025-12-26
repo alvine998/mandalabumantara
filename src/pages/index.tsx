@@ -75,25 +75,25 @@ export default function Home() {
                 ✨ Welcome to the Future
               </span>
             </div>
-            <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
                 Build Amazing
               </span>
               <br />
               <span className="text-slate-900">Experiences</span>
             </h1>
-            <p className="text-xl sm:text-2xl text-slate-600 mb-10 leading-relaxed">
+            <p className="text-lg sm:text-2xl text-slate-600 mb-10 leading-relaxed px-4">
               Create stunning web experiences with smooth transitions and
               beautiful design. Powered by Swup for seamless navigation.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button variant="primary" className="px-8 py-4 text-lg">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
+              <Button variant="primary" className="px-8 py-4 text-lg w-full sm:w-auto">
                 Start Building
               </Button>
               <Button
                 variant="secondary"
                 href="/features"
-                className="px-8 py-4 text-lg"
+                className="px-8 py-4 text-lg w-full sm:w-auto"
               >
                 Explore Features
               </Button>
@@ -101,13 +101,13 @@ export default function Home() {
           </div>
 
           {/* Hero Image/Visual */}
-          <div className="mt-20 relative">
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-200/50">
+          <div className="mt-16 sm:mt-20 relative px-4 sm:px-0">
+            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-slate-200/50">
               <div className="aspect-video bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
-                <div className="text-center text-white">
-                  <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <div className="text-center text-white p-4">
+                  <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
                     <svg
-                      className="w-12 h-12"
+                      className="w-8 h-8 sm:w-12 sm:h-12"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -120,29 +120,29 @@ export default function Home() {
                       />
                     </svg>
                   </div>
-                  <p className="text-2xl font-bold">Lightning Fast</p>
-                  <p className="text-lg opacity-90">Smooth Transitions</p>
+                  <p className="text-lg sm:text-2xl font-bold">Lightning Fast</p>
+                  <p className="text-base sm:text-lg opacity-90">Smooth Transitions</p>
                 </div>
               </div>
             </div>
             {/* Decorative elements */}
-            <div className="absolute -top-10 -left-10 w-40 h-40 bg-indigo-200 rounded-full blur-3xl opacity-30 animate-pulse"></div>
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-purple-200 rounded-full blur-3xl opacity-30 animate-pulse delay-1000"></div>
+            <div className="absolute -top-6 -left-6 sm:-top-10 sm:-left-10 w-24 h-24 sm:w-40 sm:h-40 bg-indigo-200 rounded-full blur-3xl opacity-30 animate-pulse"></div>
+            <div className="absolute -bottom-6 -right-6 sm:-bottom-10 sm:-right-10 w-24 h-24 sm:w-40 sm:h-40 bg-purple-200 rounded-full blur-3xl opacity-30 animate-pulse delay-1000"></div>
           </div>
         </div>
       </Section>
 
       <Section background="light">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-4 text-slate-900">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-slate-900">
               Powerful Features
             </h2>
-            <p className="text-xl text-slate-600">
+            <p className="text-lg sm:text-xl text-slate-600">
               Everything you need to build amazing experiences
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-0">
             {features.map((feature, index) => (
               <FeatureCard
                 key={index}
@@ -156,22 +156,22 @@ export default function Home() {
       </Section>
 
       <Section>
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="p-12 rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
-            <h2 className="text-4xl sm:text-5xl font-bold mb-6">
+        <div className="max-w-4xl mx-auto text-center px-4">
+          <div className="p-8 sm:p-12 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
               Ready to Get Started?
             </h2>
-            <p className="text-xl mb-8 opacity-90">
+            <p className="text-lg sm:text-xl mb-8 opacity-90">
               Join thousands of developers building amazing experiences
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="primary" className="px-8 py-4 text-lg bg-white text-indigo-600 hover:bg-white/90">
+              <Button variant="primary" className="px-8 py-4 text-lg bg-white text-indigo-600 hover:bg-white/90 w-full sm:w-auto">
                 Start Free Trial
               </Button>
               <Button
                 variant="outline"
                 href="/contact"
-                className="px-8 py-4 text-lg"
+                className="px-8 py-4 text-lg w-full sm:w-auto"
               >
                 Contact Sales
               </Button>
@@ -182,22 +182,22 @@ export default function Home() {
 
       {/* Floating/Centered Search Bar */}
       <div
-        className={`fixed left-1/2 transform -translate-x-1/2 z-40 w-full max-w-lg px-6 transition-all duration-700 cubic-bezier(0.4, 0, 0.2, 1) ${isScrolled
-          ? "bottom-8 translate-y-0 scale-100"
-          : "bottom-1/2 translate-y-1/2 scale-110"
+        className={`fixed left-1/2 transform -translate-x-1/2 z-40 w-[92%] sm:w-full max-w-lg transition-all duration-700 cubic-bezier(0.4, 0, 0.2, 1) ${isScrolled
+          ? "bottom-6 sm:bottom-8 translate-y-0 scale-100"
+          : "bottom-1/2 translate-y-1/2 scale-100 sm:scale-110"
           }`}
       >
         <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full opacity-30 blur-md animate-pulse"></div>
         <div className="relative bg-white/80 backdrop-blur-xl rounded-full shadow-2xl flex items-center p-2 border border-white/50 ring-1 ring-white/50">
-          <div className="pl-4 text-slate-400">
+          <div className="pl-3 sm:pl-4 text-slate-400">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
           </div>
           <input
             type="text"
-            placeholder="Explore Your Future Here..."
-            className="w-full bg-transparent border-none focus:ring-0 outline-none text-slate-800 placeholder-slate-500/80 h-10 px-3 text-base focus:outline-none"
+            placeholder="Explore..."
+            className="w-full bg-transparent border-none focus:ring-0 outline-none text-slate-800 placeholder-slate-500/80 h-10 px-3 text-sm sm:text-base focus:outline-none"
           />
           <div className="flex items-center space-x-1">
             <button className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-full transition-colors shadow-sm">

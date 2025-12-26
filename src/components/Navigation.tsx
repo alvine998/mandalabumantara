@@ -8,8 +8,9 @@ interface NavigationProps {
 
 export default function Navigation({ activePage }: NavigationProps) {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isHome = activePage === "home";
-  const showScrolledStyle = isScrolled || !isHome;
+  const showScrolledStyle = isScrolled || !isHome || mobileMenuOpen;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +20,15 @@ export default function Navigation({ activePage }: NavigationProps) {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+  }, [mobileMenuOpen]);
 
   const navLinks = [
     { href: "/", label: "Home", key: "home" },
@@ -36,9 +46,11 @@ export default function Navigation({ activePage }: NavigationProps) {
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="flex items-center justify-between h-20">
-          <SwupLink href="/" className="flex items-center space-x-2">
+          <SwupLink href="/" className="flex items-center space-x-2 z-50 relative">
             <Image src="/images/logo.png" alt="Logo" width={70} height={70} />
           </SwupLink>
+
+          {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
               <SwupLink
@@ -57,13 +69,46 @@ export default function Navigation({ activePage }: NavigationProps) {
               </SwupLink>
             ))}
           </div>
-          <div className="px-10"></div>
-          {/* <button className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-medium hover:shadow-lg hover:shadow-indigo-500/50 transition-all duration-300 transform hover:scale-105">
-            Get Started
-          </button> */}
+
+          <div className="hidden md:block px-10"></div>
+
+          {/* Mobile Menu Button */}
+          <button
+            className="md:hidden z-[60] p-2 text-slate-800 focus:outline-none"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            <div className="w-6 h-5 relative flex flex-col justify-between">
+              <span className={`w-full h-0.5 bg-current transform transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''} ${!showScrolledStyle && !mobileMenuOpen ? 'bg-white' : 'bg-slate-800'}`} />
+              <span className={`w-full h-0.5 bg-current transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : 'opacity-100'} ${!showScrolledStyle && !mobileMenuOpen ? 'bg-white' : 'bg-slate-800'}`} />
+              <span className={`w-full h-0.5 bg-current transform transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2.5' : ''} ${!showScrolledStyle && !mobileMenuOpen ? 'bg-white' : 'bg-slate-800'}`} />
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu Overlay/Backdrop */}
+      <div
+        className={`fixed inset-0 bg-black/20 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300 ${mobileMenuOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setMobileMenuOpen(false)}
+      />
+
+      {/* Mobile Sidebar Drawer */}
+      <div className={`fixed top-0 right-0 bottom-0 w-full bg-white z-50 transform transition-transform duration-300 ease-in-out md:hidden shadow-2xl flex flex-col pt-24 h-screen ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex flex-col bg-white w-full">
+          {navLinks.map((link) => (
+            <SwupLink
+              key={link.key}
+              href={link.href}
+              className={`text-lg font-medium px-4 py-3 rounded-xl transition-colors ${activePage === link.key
+                ? "bg-indigo-50 text-indigo-600"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              {link.label}
+            </SwupLink>
+          ))}
         </div>
       </div>
     </nav>
   );
 }
-
