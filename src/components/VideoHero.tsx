@@ -1,4 +1,9 @@
+import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import SwupLink from "./SwupLink";
+
+// Dynamically import ReactPlayer to avoid hydration issues
+const ReactPlayer = dynamic(() => import("react-player/lazy"), { ssr: false });
 
 interface VideoHeroProps {
   badge?: string;
@@ -14,7 +19,8 @@ interface VideoHeroProps {
     href: string;
   };
   showScrollIndicator?: boolean;
-  videoSrc?: {
+  videoType?: "local" | "youtube";
+  videoSrc?: string | {
     mp4?: string;
     webm?: string;
   };
@@ -28,31 +34,81 @@ export default function VideoHero({
   primaryButton,
   secondaryButton,
   showScrollIndicator = true,
+  videoType = "local",
   videoSrc = {
     mp4: "/video-background.mp4",
     webm: "/video-background.webm",
   },
 }: VideoHeroProps) {
+  const [hasWindow, setHasWindow] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasWindow(true);
+    }
+  }, []);
+
   return (
     <section className="relative h-screen w-full overflow-hidden">
       {/* Video Background */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover"
-      >
-        {videoSrc.mp4 && <source src={videoSrc.mp4} type="video/mp4" />}
-        {videoSrc.webm && <source src={videoSrc.webm} type="video/webm" />}
-      </video>
+      {videoType === "local" ? (
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover"
+        >
+          {typeof videoSrc === "object" && videoSrc.mp4 && (
+            <source src={videoSrc.mp4} type="video/mp4" />
+          )}
+          {typeof videoSrc === "object" && videoSrc.webm && (
+            <source src={videoSrc.webm} type="video/webm" />
+          )}
+        </video>
+      ) : (
+        <div className="absolute inset-0 w-full h-full pointer-events-none select-none">
+          {hasWindow && (
+            <ReactPlayer
+              url={videoSrc as string}
+              playing
+              loop
+              muted
+              width="100%"
+              height="100%"
+              className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 min-w-full min-h-full object-cover"
+              style={{ objectFit: "cover" }}
+              config={{
+                youtube: {
+                  playerVars: {
+                    showinfo: 0,
+                    controls: 0,
+                    modestbranding: 1,
+                    rel: 0,
+                    iv_load_policy: 3,
+                    disablekb: 1,
+                  },
+                },
+              }}
+            />
+          )}
+          {/* Cover any potential black bars or loading states */}
+          <div className="absolute inset-0 bg-transparent scale-[1.35] origin-center w-full h-full"> 
+             {/* Note: ReactPlayer iframe sometimes has black bars. Scaling up slightly helps chop edges if needed. 
+                 But better to rely on CSS object-fit equivalent. 
+                 Since iframe cannot be object-fit easily, simple scaling technique is common. 
+                 However, above ReactPlayer style/classname tries to enforce coverage.
+             */}
+          </div>
+        </div>
+      )}
 
       {/* Overlay Gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-white/20 to-white/60"></div>
 
       {/* Content Overlay */}
       <div className="relative z-10 h-full flex items-center justify-center">
-        <div className="text-center max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
+        {/* <div className="text-center max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
           {badge && (
             <div className="inline-block mb-6 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-white/50 shadow-lg">
               <span className="text-sm font-medium text-indigo-700">
@@ -96,7 +152,7 @@ export default function VideoHero({
               )}
             </div>
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Scroll Indicator */}

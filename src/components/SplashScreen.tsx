@@ -1,13 +1,23 @@
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 
 export default function SplashScreen() {
-  const [isVisible, setIsVisible] = useState(true);
+  const router = useRouter();
+  const [isVisible, setIsVisible] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
+    // Only show on home page ("/")
+    if (router.pathname !== "/") {
+      return;
+    }
+
+    setIsVisible(true);
+
     // Prevent body scroll while splash is visible
     document.body.style.overflow = "hidden";
-    
+
     // Function to get and stop Lenis
     const stopLenis = () => {
       const lenis = (window as any).lenis;
@@ -32,13 +42,13 @@ export default function SplashScreen() {
     const timer = setTimeout(() => {
       clearInterval(lenisCheckInterval);
       setIsAnimating(true);
-      
+
       // Remove from DOM after animation
       setTimeout(() => {
         setIsVisible(false);
         // Restore body scroll
         document.body.style.overflow = "unset";
-        
+
         // Resume Lenis
         startLenis();
       }, 500); // Match animation duration
@@ -56,16 +66,15 @@ export default function SplashScreen() {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 transition-opacity duration-500 ${
-        isAnimating ? "opacity-0" : "opacity-100"
-      }`}
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-100"
+        }`}
     >
       {/* Animated Logo */}
       <div className="flex flex-col items-center space-y-8">
         {/* Logo Container with Animation */}
         <div className="relative">
           <div className="w-24 h-24 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-2xl transform animate-pulse">
-            <span className="text-white font-bold text-5xl">M</span>
+            <Image src="/images/logo.png" alt="Logo" width={90} height={90} />
           </div>
           {/* Rotating Ring */}
           <div className="absolute inset-0 border-4 border-white/30 rounded-2xl animate-spin-slow"></div>
@@ -76,7 +85,7 @@ export default function SplashScreen() {
         {/* Brand Name */}
         <div className="text-center">
           <h1 className="text-4xl sm:text-5xl font-bold text-white mb-2 animate-fade-in">
-            Mandala
+            Mandala Bumantara
           </h1>
           <p className="text-white/80 text-lg animate-fade-in-delay">
             Building Amazing Experiences

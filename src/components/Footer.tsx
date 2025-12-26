@@ -1,3 +1,4 @@
+import Image from "next/image";
 import SwupLink from "./SwupLink";
 
 export default function Footer() {
@@ -12,12 +13,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold">M</span>
-            </div>
-            <span className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Mandala
-            </span>
+            <Image src="/images/logo.png" alt="Logo" width={70} height={70} />
           </div>
           <div className="flex space-x-6 text-slate-600">
             {footerLinks.map((link) => (

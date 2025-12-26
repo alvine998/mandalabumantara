@@ -6,6 +6,7 @@ import SwupFadeTheme from "@swup/fade-theme";
 import SwupScrollPlugin from "@swup/scroll-plugin";
 import SplashScreen from "@/components/SplashScreen";
 import Lenis from "@studio-freight/lenis";
+import Head from "next/head";
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -20,7 +21,6 @@ export default function App({ Component, pageProps }: AppProps) {
       gestureOrientation: "vertical",
       smoothWheel: true,
       wheelMultiplier: 1,
-      smoothTouch: false,
       touchMultiplier: 2,
       infinite: false,
     });
@@ -39,21 +39,23 @@ export default function App({ Component, pageProps }: AppProps) {
     // Initialize Swup
     const swup = new Swup({
       plugins: [
-        new SwupFadeTheme({
-          duration: 300,
-        }),
+        new SwupFadeTheme(),
         new SwupScrollPlugin({
           doScrollingRightAway: false,
-          animateScroll: false, // Disable Swup scroll animation since Lenis handles it
-          scrollFriction: 0.3,
-          scrollAcceleration: 0.04,
+          animateScroll: {
+            betweenPages: false,
+            samePageWithHash: false,
+            samePage: false,
+          }, // Disable Swup scroll animation since Lenis handles it
+
+
         }),
       ],
       containers: ["[data-swup]"],
       cache: true,
       animateHistoryBrowsing: true,
       linkSelector: 'a[href^="/"]:not([data-no-swup])',
-      skipPopStateHandling: false,
+      skipPopStateHandling: () => false,
     });
 
     // Handle page updates after Swup navigation
@@ -73,6 +75,9 @@ export default function App({ Component, pageProps }: AppProps) {
 
   return (
     <>
+      <Head>
+        <title>Mandala Bumantara</title>
+      </Head>
       <SplashScreen />
       <Component {...pageProps} />
     </>
