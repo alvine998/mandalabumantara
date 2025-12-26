@@ -9,7 +9,7 @@ import SwupLink from "@/components/SwupLink";
 const VIDEO_OPTIONS = [
   {
     type: "youtube",
-    src: "https://youtu.be/l6EzZafb1Pk?si=yDlF-OxlWCMldbu_", // Dummy example
+    src: "https://firebasestorage.googleapis.com/v0/b/sales-midland.firebasestorage.app/o/Konten%201%20vistara.mp4?alt=media&token=adc090e2-c7e6-4f88-981e-fa5432a9ce6d", // Dummy example
   },
 ];
 
