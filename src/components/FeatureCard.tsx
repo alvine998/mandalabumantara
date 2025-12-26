@@ -12,7 +12,7 @@ export default function FeatureCard({
   gradientColor,
 }: FeatureCardProps) {
   return (
-    <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-indigo-500 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl relative overflow-hidden">
+    <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl relative overflow-hidden">
       {gradientColor && (
         <div
           className={`absolute inset-0 bg-gradient-to-br ${gradientColor} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}

@@ -16,7 +16,7 @@ export default function Section({
   const backgroundClasses = {
     default: "",
     light: "bg-white/80 backdrop-blur-sm",
-    gradient: "bg-gradient-to-br from-white via-blue-50 to-indigo-50",
+    gradient: "bg-gradient-to-br from-white via-blue-50 to-blue-50",
   };
 
   const paddingClasses = {

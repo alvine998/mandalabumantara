@@ -28,7 +28,7 @@ export default function PageLayout({
 }: PageLayoutProps) {
   const backgroundClasses = {
     default: "bg-white",
-    gradient: "bg-gradient-to-br from-white via-blue-50 to-indigo-50",
+    gradient: "bg-gradient-to-br from-white via-blue-50 to-blue-50",
   };
 
   return (

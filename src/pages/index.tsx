@@ -35,22 +35,22 @@ export default function Home() {
 
   const features = [
     {
-      icon: "⚡",
-      title: "Lightning Fast",
+      icon: "🎯",
+      title: "Lokasi Strategis",
       description:
-        "Optimized performance with instant page transitions and smooth animations.",
+        "Properti berlokasi di area premium dengan akses mudah ke pusat bisnis, pendidikan, dan fasilitas umum.",
     },
     {
-      icon: "🎨",
-      title: "Beautiful Design",
+      icon: "🏆",
+      title: "Kualitas Terjamin",
       description:
-        "Modern UI components with stunning gradients and elegant typography.",
+        "Standar konstruksi internasional dengan material berkualitas tinggi dan pengawasan ketat.",
     },
     {
-      icon: "🚀",
-      title: "Easy to Use",
+      icon: "💎",
+      title: "Investasi Menguntungkan",
       description:
-        "Simple integration with powerful customization options for your needs.",
+        "Nilai properti yang terus meningkat dengan ROI yang menarik untuk investor jangka panjang.",
     },
   ];
 
@@ -67,79 +67,137 @@ export default function Home() {
         secondaryButton={{ label: "Explore Features", href: "/features" }}
       />
 
+      {/* Company Overview Section */}
       <Section padding="large">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-4xl mx-auto">
-            <div className="inline-block mb-6 px-4 py-2 bg-indigo-100 rounded-full border border-indigo-200">
-              <span className="text-sm font-medium text-indigo-700">
-                ✨ Welcome to the Future
+          <div className="text-center max-w-4xl mx-auto mb-16">
+            <div className="inline-block mb-6 px-4 py-2 bg-amber-100 rounded-full border border-amber-200">
+              <span className="text-sm font-medium text-amber-700">
+                🏢 Solusi Properti Terintegrasi
               </span>
             </div>
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
-                Build Amazing
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              <span className="bg-gradient-to-r from-blue-900 via-blue-800 to-amber-500 bg-clip-text text-transparent">
+                Mandala Bumantara
               </span>
               <br />
-              <span className="text-slate-900">Experiences</span>
+              <span className="text-slate-900">Ekosistem Properti Terpadu</span>
             </h1>
-            <p className="text-lg sm:text-2xl text-slate-600 mb-10 leading-relaxed px-4">
-              Create stunning web experiences with smooth transitions and
-              beautiful design. Powered by Swup for seamless navigation.
+            <p className="text-lg sm:text-xl text-slate-600 mb-8 leading-relaxed">
+              Dari konsultasi hingga perawatan, kami menyediakan solusi properti menyeluruh
+              dengan standar kualitas terbaik dan komitmen kepada kepuasan pelanggan.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center px-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button variant="primary" className="px-8 py-4 text-lg w-full sm:w-auto">
-                Start Building
+                Konsultasi Gratis
               </Button>
               <Button
                 variant="secondary"
-                href="/features"
+                href="/mandala-bumi-nusantara"
                 className="px-8 py-4 text-lg w-full sm:w-auto"
               >
-                Explore Features
+                Tentang Kami
               </Button>
             </div>
           </div>
 
-          {/* Hero Image/Visual */}
-          <div className="mt-16 sm:mt-20 relative px-4 sm:px-0">
-            <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-slate-200/50">
-              <div className="aspect-video bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
-                <div className="text-center text-white p-4">
-                  <div className="w-16 h-16 sm:w-24 sm:h-24 mx-auto mb-4 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                    <svg
-                      className="w-8 h-8 sm:w-12 sm:h-12"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
-                  </div>
-                  <p className="text-lg sm:text-2xl font-bold">Lightning Fast</p>
-                  <p className="text-base sm:text-lg opacity-90">Smooth Transitions</p>
-                </div>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+            <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-all">
+              <div className="text-4xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent mb-2">
+                500+
               </div>
+              <div className="text-slate-600 font-medium">Unit Terjual</div>
             </div>
-            {/* Decorative elements */}
-            <div className="absolute -top-6 -left-6 sm:-top-10 sm:-left-10 w-24 h-24 sm:w-40 sm:h-40 bg-indigo-200 rounded-full blur-3xl opacity-30 animate-pulse"></div>
-            <div className="absolute -bottom-6 -right-6 sm:-bottom-10 sm:-right-10 w-24 h-24 sm:w-40 sm:h-40 bg-purple-200 rounded-full blur-3xl opacity-30 animate-pulse delay-1000"></div>
+            <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-all">
+              <div className="text-4xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent mb-2">
+                50+
+              </div>
+              <div className="text-slate-600 font-medium">Proyek Selesai</div>
+            </div>
+            <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-all">
+              <div className="text-4xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent mb-2">
+                98%
+              </div>
+              <div className="text-slate-600 font-medium">Kepuasan Klien</div>
+            </div>
+            <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-all">
+              <div className="text-4xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent mb-2">
+                15+
+              </div>
+              <div className="text-slate-600 font-medium">Tahun Pengalaman</div>
+            </div>
           </div>
         </div>
       </Section>
 
+      {/* Business Divisions Section */}
       <Section background="light">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12 sm:mb-16">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-slate-900">
-              Powerful Features
+              Divisi Bisnis Kami
             </h2>
             <p className="text-lg sm:text-xl text-slate-600">
-              Everything you need to build amazing experiences
+              Solusi lengkap untuk semua kebutuhan properti Anda
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-0">
+            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🏗️</div>
+              <h3 className="text-2xl font-bold mb-3 text-slate-900">Developer</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Pengembangan dan penjualan properti berkualitas dengan lokasi strategis dan desain modern.
+              </p>
+            </div>
+            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">👷</div>
+              <h3 className="text-2xl font-bold mb-3 text-slate-900">Kontraktor</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Jasa konstruksi profesional dengan standar kualitas tinggi, tepat waktu, dan sesuai anggaran.
+              </p>
+            </div>
+            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🎨</div>
+              <h3 className="text-2xl font-bold mb-3 text-slate-900">Interior</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Layanan desain dan konstruksi interior untuk meningkatkan nilai dan estetika properti Anda.
+              </p>
+            </div>
+            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">💼</div>
+              <h3 className="text-2xl font-bold mb-3 text-slate-900">Konsultan</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Saran ahli tentang investasi, pengembangan, dan manajemen properti yang optimal.
+              </p>
+            </div>
+            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">📦</div>
+              <h3 className="text-2xl font-bold mb-3 text-slate-900">Material</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Penyedia material bangunan berkualitas premium dengan harga kompetitif dan pengiriman cepat.
+              </p>
+            </div>
+            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
+              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🏠</div>
+              <h3 className="text-2xl font-bold mb-3 text-slate-900">Home Service</h3>
+              <p className="text-slate-600 leading-relaxed">
+                Layanan perawatan dan perbaikan rumah untuk kenyamanan hunian modern Anda.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* Why Choose Us Section */}
+      <Section>
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-slate-900">
+              Mengapa Memilih Kami
+            </h2>
+            <p className="text-lg sm:text-xl text-slate-600">
+              Keunggulan yang membuat kami berbeda
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-0">
@@ -157,7 +215,7 @@ export default function Home() {
 
       <Section>
         <div className="max-w-4xl mx-auto text-center px-4">
-          <div className="p-8 sm:p-12 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+          <div className="p-8 sm:p-12 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 text-white">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6">
               Ready to Get Started?
             </h2>
@@ -165,7 +223,7 @@ export default function Home() {
               Join thousands of developers building amazing experiences
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button variant="primary" className="px-8 py-4 text-lg bg-white text-indigo-600 hover:bg-white/90 w-full sm:w-auto">
+              <Button variant="primary" className="px-8 py-4 text-lg bg-white text-blue-900 hover:bg-white/90 w-full sm:w-auto">
                 Start Free Trial
               </Button>
               <Button
@@ -200,7 +258,7 @@ export default function Home() {
             className="w-full bg-transparent border-none focus:ring-0 outline-none text-slate-800 placeholder-slate-500/80 h-10 px-3 text-sm sm:text-base focus:outline-none"
           />
           <div className="flex items-center space-x-1">
-            <button className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-full transition-colors shadow-sm">
+            <button className="bg-amber-500 hover:bg-amber-600 text-white p-2 rounded-full transition-colors shadow-sm">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>

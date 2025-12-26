@@ -31,7 +31,7 @@ export default function Features() {
       title: "Fully Responsive",
       description:
         "Perfect experience on all devices. From mobile phones to large desktop screens.",
-      gradientColor: "from-purple-400 to-indigo-500",
+      gradientColor: "from-blue-800 to-blue-900",
     },
     {
       icon: "🔒",
@@ -45,7 +45,7 @@ export default function Features() {
       title: "Global Scale",
       description:
         "Built to handle millions of users. Scalable infrastructure that grows with your needs.",
-      gradientColor: "from-indigo-400 to-purple-500",
+      gradientColor: "from-blue-800 to-blue-900",
     },
   ];
 
@@ -54,7 +54,7 @@ export default function Features() {
       <Section padding="large">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-900 via-blue-800 to-amber-500 bg-clip-text text-transparent">
               Powerful Features
             </span>
           </h1>
@@ -82,7 +82,7 @@ export default function Features() {
 
       <Section>
         <div className="max-w-4xl mx-auto text-center">
-          <div className="p-12 rounded-3xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white">
+          <div className="p-12 rounded-3xl bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 text-white">
             <h2 className="text-4xl sm:text-5xl font-bold mb-6">
               Ready to Experience These Features?
             </h2>
@@ -92,7 +92,7 @@ export default function Features() {
             <Button
               variant="primary"
               href="/contact"
-              className="px-8 py-4 text-lg bg-white text-indigo-600 hover:bg-white/90"
+              className="px-8 py-4 text-lg bg-white text-blue-900 hover:bg-white/90"
             >
               Get Started Now
             </Button>

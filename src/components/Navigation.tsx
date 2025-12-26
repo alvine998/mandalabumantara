@@ -47,12 +47,21 @@ export default function Navigation() {
     };
   }, []);
 
+  const [projectsOpen, setProjectsOpen] = useState(false);
+
   const navLinks = [
     { href: "/", label: "Home", key: "home", isActive: currentPath === "/" },
     { href: "/about", label: "About", key: "about", isActive: currentPath === "/about" },
     { href: "/features", label: "Features", key: "features", isActive: currentPath === "/features" },
     { href: "/contact", label: "Contact", key: "contact", isActive: currentPath === "/contact" },
   ];
+
+  const projectLinks = [
+    { href: "/mandala-bumi-nusantara", label: "Mandala Bumi Nusantara" },
+    { href: "/vistara", label: "Vistara" },
+  ];
+
+  const isProjectActive = currentPath.startsWith("/mandala-bumi-nusantara") || currentPath.startsWith("/vistara");
 
   return (
     <nav
@@ -63,28 +72,81 @@ export default function Navigation() {
     >
       <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div className="flex items-center justify-between h-20">
-          <SwupLink href="/" className="flex items-center space-x-2 z-[120] relative">
+          <a href="/" data-no-swup className="flex items-center space-x-2 z-[120] relative">
             <Image src="/images/logo.png" alt="Logo" width={70} height={70} />
-          </SwupLink>
+          </a>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
-              <SwupLink
-                key={link.key}
-                href={link.href}
-                className={`transition-colors font-medium ${link.isActive
-                  ? showScrolledStyle
-                    ? "text-indigo-600"
-                    : "text-white"
-                  : showScrolledStyle
-                    ? "text-slate-700 hover:text-indigo-600"
-                    : "text-white/80 hover:text-white"
+              link.key === "home" ? (
+                <a
+                  key={link.key}
+                  href={link.href}
+                  data-no-swup
+                  className={`transition-colors font-medium ${link.isActive
+                    ? "text-amber-500"
+                    : "text-slate-700 hover:text-amber-500"
+                    }`}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <SwupLink
+                  key={link.key}
+                  href={link.href}
+                  className={`transition-colors font-medium ${link.isActive
+                    ? "text-amber-500"
+                    : "text-slate-700 hover:text-amber-500"
+                    }`}
+                >
+                  {link.label}
+                </SwupLink>
+              )
+            ))}
+
+            {/* Projects Dropdown */}
+            <div
+              className="relative"
+              onMouseEnter={() => setProjectsOpen(true)}
+              onMouseLeave={() => setProjectsOpen(false)}
+            >
+              <button
+                className={`transition-colors font-medium flex items-center space-x-1 ${isProjectActive
+                  ? "text-amber-500"
+                  : "text-slate-700 hover:text-amber-500"
                   }`}
               >
-                {link.label}
-              </SwupLink>
-            ))}
+                <span>Projects</span>
+                <svg
+                  className={`w-4 h-4 transition-transform ${projectsOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {/* Dropdown Menu */}
+              <div
+                className={`absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-slate-200 py-2 transition-all duration-200 ${projectsOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'
+                  }`}
+              >
+                {projectLinks.map((project) => (
+                  <SwupLink
+                    key={project.href}
+                    href={project.href}
+                    className={`block px-4 py-3 transition-colors ${currentPath === project.href
+                      ? "bg-amber-50 text-amber-500"
+                      : "text-slate-700 hover:bg-slate-50 hover:text-amber-500"
+                      }`}
+                  >
+                    {project.label}
+                  </SwupLink>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="hidden md:block px-10"></div>
@@ -110,20 +172,74 @@ export default function Navigation() {
       />
 
       {/* Mobile Sidebar Drawer */}
-      <div className={`fixed top-0 right-0 bottom-0 w-full bg-white z-[110] transform transition-transform duration-300 ease-in-out md:hidden shadow-2xl flex flex-col pt-24 h-screen ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="flex flex-col bg-white w-full">
+      <div className={`fixed top-0 right-0 bottom-0 w-full bg-white z-[110] transform transition-transform duration-300 ease-in-out md:hidden shadow-2xl flex flex-col pt-24 h-screen overflow-y-auto ${mobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="flex flex-col bg-white w-full px-4">
           {navLinks.map((link) => (
-            <SwupLink
-              key={link.key}
-              href={link.href}
-              className={`text-lg font-medium px-4 py-3 rounded-xl transition-colors ${link.isActive
-                ? "bg-indigo-50 text-indigo-600"
-                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
-              onClick={() => { setMobileMenuOpen(false); console.log(link.href, router.pathname) }}
-            >
-              {link.label}
-            </SwupLink>
+            link.key === "home" ? (
+              <a
+                key={link.key}
+                href={link.href}
+                data-no-swup
+                className={`text-lg font-medium px-4 py-3 rounded-xl transition-colors ${link.isActive
+                  ? "bg-amber-50 text-amber-500"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
+                onClick={() => { setMobileMenuOpen(false); }}
+              >
+                {link.label}
+              </a>
+            ) : (
+              <SwupLink
+                key={link.key}
+                href={link.href}
+                className={`text-lg font-medium px-4 py-3 rounded-xl transition-colors ${link.isActive
+                  ? "bg-amber-50 text-amber-500"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`}
+                onClick={() => { setMobileMenuOpen(false); console.log(link.href, router.pathname) }}
+              >
+                {link.label}
+              </SwupLink>
+            )
           ))}
+
+          {/* Projects Section in Mobile */}
+          <div className="mt-2">
+            <button
+              onClick={() => setProjectsOpen(!projectsOpen)}
+              className={`w-full text-left text-lg font-medium px-4 py-3 rounded-xl transition-colors flex items-center justify-between ${isProjectActive
+                ? "bg-indigo-50 text-indigo-600"
+                : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                }`}
+            >
+              <span>Projects</span>
+              <svg
+                className={`w-5 h-5 transition-transform ${projectsOpen ? 'rotate-180' : ''}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            {/* Project Links */}
+            <div className={`overflow-hidden transition-all duration-300 ${projectsOpen ? 'max-h-48' : 'max-h-0'}`}>
+              <div className="pl-4 pt-2 space-y-1">
+                {projectLinks.map((project) => (
+                  <SwupLink
+                    key={project.href}
+                    href={project.href}
+                    className={`block text-base px-4 py-2.5 rounded-lg transition-colors ${currentPath === project.href
+                      ? "bg-indigo-50 text-indigo-600"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      }`}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {project.label}
+                  </SwupLink>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </nav>

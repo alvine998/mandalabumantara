@@ -10,7 +10,7 @@ export default function Contact() {
       <Section padding="large">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-900 via-blue-800 to-amber-500 bg-clip-text text-transparent">
               Get in Touch
             </span>
           </h1>
@@ -41,7 +41,7 @@ export default function Contact() {
                     type="text"
                     id="name"
                     name="name"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
                     placeholder="Your name"
                   />
                 </div>
@@ -56,7 +56,7 @@ export default function Contact() {
                     type="email"
                     id="email"
                     name="email"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
                     placeholder="your.email@example.com"
                   />
                 </div>
@@ -71,7 +71,7 @@ export default function Contact() {
                     id="message"
                     name="message"
                     rows={6}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+                    className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all resize-none"
                     placeholder="Your message..."
                   ></textarea>
                 </div>
@@ -87,7 +87,7 @@ export default function Contact() {
 
             {/* Contact Info */}
             <div className="space-y-6">
-              <div className="p-8 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+              <div className="p-8 rounded-2xl bg-gradient-to-br from-blue-900 to-blue-800 text-white">
                 <h2 className="text-3xl font-bold mb-6">Contact Information</h2>
                 <div className="space-y-6">
                   <div className="flex items-start space-x-4">
@@ -174,7 +174,7 @@ export default function Contact() {
                   {socialLinks.map((social) => (
                     <button
                       key={social}
-                      className="px-6 py-3 rounded-lg bg-slate-100 text-slate-700 font-medium hover:bg-indigo-100 hover:text-indigo-600 transition-all duration-300"
+                      className="px-6 py-3 rounded-lg bg-slate-100 text-slate-700 font-medium hover:bg-amber-100 hover:text-amber-500 transition-all duration-300"
                     >
                       {social}
                     </button>
@@ -184,7 +184,7 @@ export default function Contact() {
             </div>
           </div>
         </div>
-      </Section>
-    </PageLayout>
+      </Section >
+    </PageLayout >
   );
 }
