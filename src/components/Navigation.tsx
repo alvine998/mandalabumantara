@@ -9,7 +9,10 @@ export default function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [, forceUpdate] = useState({});
 
-  const showScrolledStyle = isScrolled || mobileMenuOpen;
+  // Get current path from window location for reliability
+  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
+  const isHome = currentPath === '/';
+  const showScrolledStyle = isScrolled || !isHome || mobileMenuOpen;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,9 +46,6 @@ export default function Navigation() {
       document.removeEventListener("swup:pageView", handleNavigation);
     };
   }, []);
-
-  // Get current path from window location for reliability
-  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
 
   const navLinks = [
     { href: "/", label: "Home", key: "home", isActive: currentPath === "/" },
