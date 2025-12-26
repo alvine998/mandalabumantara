@@ -52,7 +52,7 @@ export default function Navigation() {
   const navLinks = [
     { href: "/", label: "Home", key: "home", isActive: currentPath === "/" },
     { href: "/about", label: "About", key: "about", isActive: currentPath === "/about" },
-    { href: "/features", label: "Features", key: "features", isActive: currentPath === "/features" },
+    { href: "/gallery", label: "Gallery", key: "gallery", isActive: currentPath === "/gallery" },
     { href: "/contact", label: "Contact", key: "contact", isActive: currentPath === "/contact" },
   ];
 

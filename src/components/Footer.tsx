@@ -1,5 +1,6 @@
 import Image from "next/image";
 import SwupLink from "./SwupLink";
+import { Twitter, Github, Linkedin, MessageCircle } from "lucide-react";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -7,7 +8,7 @@ export default function Footer() {
   const footerSections = {
     company: [
       { href: "/about", label: "About Us" },
-      { href: "/features", label: "Features" },
+      { href: "/gallery", label: "Gallery" },
       { href: "/contact", label: "Contact" },
     ],
     project: [
@@ -23,10 +24,10 @@ export default function Footer() {
   };
 
   const socialLinks = [
-    { href: "https://twitter.com/mandalabumantara", label: "Twitter", icon: "𝕏" },
-    { href: "https://github.com/mandalabumantara", label: "GitHub", icon: "⚡" },
-    { href: "https://linkedin.com/mandalabumantara", label: "LinkedIn", icon: "💼" },
-    { href: "https://discord.com/mandalabumantara", label: "Discord", icon: "💬" },
+    { href: "https://twitter.com/mandalabumantara", label: "Twitter", icon: Twitter },
+    { href: "https://github.com/mandalabumantara", label: "GitHub", icon: Github },
+    { href: "https://linkedin.com/mandalabumantara", label: "LinkedIn", icon: Linkedin },
+    { href: "https://discord.com/mandalabumantara", label: "Discord", icon: MessageCircle },
   ];
 
   return (
@@ -45,20 +46,20 @@ export default function Footer() {
             <p className="text-slate-600 mb-6 leading-relaxed max-w-sm">
               Building amazing web experiences with smooth transitions and beautiful design. Powered by modern technologies.
             </p>
-            {/* Social Links */}
             <div className="flex space-x-3">
-              {socialLinks.map((social) => (
-                <a
-                  key={social.label}
-                  href={social.href}
-                  className="w-10 h-10 rounded-full bg-slate-100 hover:bg-amber-100 flex items-center justify-center transition-all duration-300 hover:scale-110 group"
-                  aria-label={social.label}
-                >
-                  <span className="text-lg group-hover:scale-110 transition-transform">
-                    {social.icon}
-                  </span>
-                </a>
-              ))}
+              {socialLinks.map((social) => {
+                const IconComponent = social.icon;
+                return (
+                  <a
+                    key={social.label}
+                    href={social.href}
+                    className="w-10 h-10 rounded-full bg-slate-100 hover:bg-amber-100 flex items-center justify-center transition-all duration-300 hover:scale-110 group"
+                    aria-label={social.label}
+                  >
+                    <IconComponent className="w-5 h-5 text-slate-600 group-hover:text-amber-500 transition-colors" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
