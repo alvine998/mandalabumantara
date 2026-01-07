@@ -23,23 +23,34 @@ export default function ContentDetail() {
 
         // Simulate API call
         setTimeout(() => {
+            const mockData: Record<string, any> = {
+                "1": { title: "Home Hero Section", slug: "home", type: "Landing Pages", status: "published", content: "Welcome to Mandala Bumantara. We build amazing digital experiences.", author: "Admin" },
+                "2": { title: "About Us Story", slug: "about", type: "Landing Pages", status: "published", content: "Our company started with a simple vision to bridge digital gaps.", author: "Editor" },
+                "4": { title: "Contact Form Settings", slug: "contact", type: "Landing Pages", status: "published", content: "Contact info and form configuration for the public site.", author: "Dev" },
+                "7": { title: "Gallery Collection", slug: "gallery", type: "Landing Pages", status: "published", content: "Visual portfolio of our latest projects and explorations.", author: "Editor" },
+                "8": { title: "Vistara Details", slug: "vistara", type: "Landing Pages", status: "published", content: "Comprehensive details about the Vistara project and its impact.", author: "Admin" },
+                "9": { title: "Mandala Bumi Nusantara", slug: "mandala-bumi-nusantara", type: "Landing Pages", status: "published", content: "Geographical and cultural context of our flagship initiative.", author: "Admin" }
+            };
+
             if (id === "new") {
                 setFormData({
                     title: "",
                     slug: "",
-                    type: "Page Section",
+                    type: "Landing Pages",
                     status: "draft",
                     content: "",
                     author: "Admin"
                 });
+            } else if (mockData[id as string]) {
+                setFormData(mockData[id as string]);
             } else {
-                // Return mock data for existing ID
+                // Default fallback
                 setFormData({
-                    title: "Home Hero Section",
-                    slug: "home-hero",
+                    title: "Unknown Content",
+                    slug: "unknown",
                     type: "Page Section",
-                    status: "published",
-                    content: "Welcome to Mandala Bumantara. We build amazing digital experiences.",
+                    status: "draft",
+                    content: "No data found for this ID.",
                     author: "Admin"
                 });
             }
@@ -185,6 +196,7 @@ export default function ContentDetail() {
                                         onChange={handleChange}
                                         className="w-full px-4 py-2 bg-white border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
                                     >
+                                        <option value="Landing Pages">Landing Pages</option>
                                         <option value="Page Section">Page Section</option>
                                         <option value="Page Content">Page Content</option>
                                         <option value="Banner">Banner</option>
