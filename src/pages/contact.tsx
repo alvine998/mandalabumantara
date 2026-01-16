@@ -1,9 +1,47 @@
+import { useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import Section from "@/components/Section";
 import Button from "@/components/Button";
+import { db } from "@/lib/firebase";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 
 export default function Contact() {
+  const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState("");
+
   const socialLinks = ["Twitter", "LinkedIn", "GitHub"];
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name.trim() || !formData.email.trim() || !formData.message.trim()) {
+      setError("Please fill in all fields");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+
+    try {
+      await addDoc(collection(db, "contact_submissions"), {
+        name: formData.name,
+        email: formData.email,
+        message: formData.message,
+        status: "new",
+        createdAt: Timestamp.now(),
+      });
+
+      setSubmitted(true);
+      setFormData({ name: "", email: "", message: "" });
+    } catch (err) {
+      console.error("Error submitting form:", err);
+      setError("Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <PageLayout activePage="contact">
@@ -29,60 +67,87 @@ export default function Contact() {
               <h2 className="text-3xl font-bold mb-6 text-slate-900">
                 Send us a message
               </h2>
-              <form className="space-y-6">
-                <div>
-                  <label
-                    htmlFor="name"
-                    className="block text-sm font-medium text-slate-700 mb-2"
+
+              {submitted ? (
+                <div className="text-center py-8">
+                  <div className="text-5xl mb-4">✅</div>
+                  <h3 className="text-xl font-semibold text-slate-900 mb-2">Message Sent!</h3>
+                  <p className="text-slate-600 mb-6">Thank you for reaching out. We'll get back to you soon.</p>
+                  <button
+                    onClick={() => setSubmitted(false)}
+                    className="text-amber-600 hover:text-amber-700 font-medium"
                   >
-                    Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
-                    placeholder="Your name"
-                  />
+                    Send another message
+                  </button>
                 </div>
-                <div>
-                  <label
-                    htmlFor="email"
-                    className="block text-sm font-medium text-slate-700 mb-2"
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {error && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                      {error}
+                    </div>
+                  )}
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="block text-sm font-medium text-slate-700 mb-2"
+                    >
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+                      placeholder="Your name"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-slate-700 mb-2"
+                    >
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
+                      placeholder="your.email@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="message"
+                      className="block text-sm font-medium text-slate-700 mb-2"
+                    >
+                      Message
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={6}
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all resize-none"
+                      placeholder="Your message..."
+                    ></textarea>
+                  </div>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="w-full px-8 py-4 text-lg"
+                    disabled={loading}
                   >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all"
-                    placeholder="your.email@example.com"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="block text-sm font-medium text-slate-700 mb-2"
-                  >
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    name="message"
-                    rows={6}
-                    className="w-full px-4 py-3 rounded-lg border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all resize-none"
-                    placeholder="Your message..."
-                  ></textarea>
-                </div>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  className="w-full px-8 py-4 text-lg"
-                >
-                  Send Message
-                </Button>
-              </form>
+                    {loading ? "Sending..." : "Send Message"}
+                  </Button>
+                </form>
+              )}
             </div>
 
             {/* Contact Info */}
@@ -129,7 +194,7 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg mb-1">Phone</h3>
-                      <p className="opacity-90">+1 (555) 123-4567</p>
+                      <p className="opacity-90">+62 21 1234 5678</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
@@ -157,9 +222,9 @@ export default function Contact() {
                     <div>
                       <h3 className="font-semibold text-lg mb-1">Address</h3>
                       <p className="opacity-90">
-                        123 Innovation Street
+                        Jl. Sudirman No. 123
                         <br />
-                        San Francisco, CA 94105
+                        Jakarta Pusat, 10220
                       </p>
                     </div>
                   </div>
@@ -184,7 +249,7 @@ export default function Contact() {
             </div>
           </div>
         </div>
-      </Section >
-    </PageLayout >
+      </Section>
+    </PageLayout>
   );
 }

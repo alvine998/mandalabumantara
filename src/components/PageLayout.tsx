@@ -17,7 +17,7 @@ const geistMono = localFont({
 
 interface PageLayoutProps {
   children: ReactNode;
-  activePage?: "home" | "about" | "gallery" | "contact";
+  activePage?: "home" | "about" | "gallery" | "contact" | "news";
   background?: "default" | "gradient";
 }
 

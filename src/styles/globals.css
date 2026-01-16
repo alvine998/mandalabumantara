@@ -61,7 +61,8 @@ html.lenis {
 
 /* Custom animations */
 @keyframes gradient {
-  0%, 100% {
+  0%,
+  100% {
     background-position: 0% 50%;
   }
   50% {
@@ -99,7 +100,8 @@ html.lenis {
 }
 
 /* Smooth transitions for all interactive elements */
-a, button {
+a,
+button {
   transition: all 0.3s ease;
 }
 
@@ -112,7 +114,8 @@ a, button {
 
 /* Loading animation */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -159,4 +162,20 @@ a, button {
 
 .animate-fade-in-delay {
   animation: fade-in 0.8s ease-out 0.3s both;
+}
+
+/* Toast slide-in animation */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
 }

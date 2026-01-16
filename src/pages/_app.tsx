@@ -7,6 +7,8 @@ import SwupScrollPlugin from "@swup/scroll-plugin";
 import SplashScreen from "@/components/SplashScreen";
 import Lenis from "@studio-freight/lenis";
 import Head from "next/head";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ToastProvider } from "@/contexts/ToastContext";
 
 export default function App({ Component, pageProps }: AppProps) {
   useEffect(() => {
@@ -78,8 +80,14 @@ export default function App({ Component, pageProps }: AppProps) {
       <Head>
         <title>Mandala Bumantara</title>
       </Head>
-      <SplashScreen />
-      <Component {...pageProps} />
+      <ToastProvider>
+        <AuthProvider>
+          <SplashScreen />
+          <Component {...pageProps} />
+        </AuthProvider>
+      </ToastProvider>
     </>
   );
 }
+
+
