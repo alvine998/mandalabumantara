@@ -33,7 +33,7 @@ export default function About() {
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-900 via-blue-800 to-amber-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 bg-clip-text text-transparent">
                 Tentang Kami
               </span>
             </h1>

@@ -73,12 +73,12 @@ export default function Vistara() {
                                     🏢 Proyek Mandala Bumi Nusantara
                                 </span>
                             </div>
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                                <span className="bg-gradient-to-r from-blue-900 via-blue-800 to-amber-500 bg-clip-text text-transparent">
+                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight bg-gradient-to-r from-blue-900 via-blue-800 to-blue-500 bg-clip-text text-transparent">
+                                <span>
                                     Vistara
                                 </span>
                                 <br />
-                                <span className="text-slate-900">Property Excellence</span>
+                                <span>Property Excellence</span>
                             </h1>
                             <p className="text-xl text-slate-600 mb-4 leading-relaxed">
                                 Proyek properti terintegrasi dari <strong>Mandala Bumi Nusantara</strong> yang menghadirkan

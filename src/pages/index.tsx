@@ -168,17 +168,15 @@ export default function Home() {
       <Section padding="large">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-4xl mx-auto mb-16">
-            <div className="inline-block mb-6 px-4 py-2 bg-amber-100 rounded-full border border-amber-200">
+            {/* <div className="inline-block mb-6 px-4 py-2 bg-amber-100 rounded-full border border-amber-200">
               <span className="text-sm font-medium text-amber-700">
                 🏢 Solusi Properti Terintegrasi
               </span>
-            </div>
+            </div> */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-              <span className="bg-gradient-to-r from-blue-900 via-blue-800 to-amber-500 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 bg-clip-text text-transparent">
                 Mandala Bumantara
               </span>
-              <br />
-              <span className="text-slate-900">Ekosistem Properti Terpadu</span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-600 mb-8 leading-relaxed">
               Dari konsultasi hingga perawatan, kami menyediakan solusi properti menyeluruh

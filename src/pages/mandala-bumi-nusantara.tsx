@@ -66,12 +66,12 @@ export default function MandalaBumiNusantara() {
                                     🇮🇩 Pembangunan Nasional Berkarakter
                                 </span>
                             </div>
-                            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                                <span className="bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 bg-clip-text text-transparent">
+                            <h1 className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-300 bg-clip-text text-transparent text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+                                <span>
                                     Mandala
                                 </span>
                                 <br />
-                                <span className="text-slate-900">Bumantara</span>
+                                <span>Bumantara</span>
                             </h1>
                             <p className="text-xl text-slate-600 mb-8 leading-relaxed">
                                 Dalam bahasa Sansekerta, <strong>Mandala</strong> secara harfiah berarti "lingkaran" atau "pusat".

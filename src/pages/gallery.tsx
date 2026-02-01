@@ -100,7 +100,7 @@ export default function Gallery() {
       <Section padding="large">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-blue-900 via-blue-800 to-amber-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 bg-clip-text text-transparent">
               Galeri Proyek
             </span>
           </h1>
@@ -119,8 +119,8 @@ export default function Gallery() {
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${selectedCategory === category.id
-                    ? "bg-gradient-to-r from-blue-900 to-amber-500 text-white shadow-lg scale-105"
-                    : "bg-white text-slate-700 border border-slate-200 hover:border-amber-500 hover:shadow-md"
+                  ? "bg-gradient-to-r from-blue-900 to-amber-500 text-white shadow-lg scale-105"
+                  : "bg-white text-slate-700 border border-slate-200 hover:border-amber-500 hover:shadow-md"
                   }`}
               >
                 {category.label}
@@ -140,8 +140,8 @@ export default function Gallery() {
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all"></div>
                   <div className="absolute top-4 right-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-semibold ${project.status === "Selesai"
-                        ? "bg-green-500 text-white"
-                        : "bg-amber-500 text-white"
+                      ? "bg-green-500 text-white"
+                      : "bg-amber-500 text-white"
                       }`}>
                       {project.status}
                     </span>
