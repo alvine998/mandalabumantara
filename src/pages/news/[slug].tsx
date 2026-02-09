@@ -13,87 +13,102 @@ interface NewsArticle {
     slug: string;
     excerpt: string;
     content: string;
-    category: string;
-    featuredImage: string;
+    thumbnail: string;
     author: string;
-    tags: string[];
-    metaTitle: string;
-    metaDescription: string;
-    publishedAt: Date;
+    keywords: string[];
+    published_at: string; // Serialized
 }
 
 interface RelatedArticle {
     id: string;
     title: string;
     slug: string;
-    featuredImage: string;
-    publishedAt: Date;
+    thumbnail: string;
+    published_at: string; // Serialized
 }
 
-export default function NewsDetail() {
-    const router = useRouter();
-    const { slug } = router.query;
-    const [article, setArticle] = useState<NewsArticle | null>(null);
-    const [relatedArticles, setRelatedArticles] = useState<RelatedArticle[]>([]);
-    const [loading, setLoading] = useState(true);
+export async function getStaticPaths() {
+    try {
+        const q = query(collection(db, "news"), where("status", "==", "published"));
+        const snapshot = await getDocs(q);
+        const paths = snapshot.docs.map(doc => ({
+            params: { slug: doc.data().slug },
+        }));
 
-    useEffect(() => {
-        if (!slug) return;
+        return {
+            paths,
+            fallback: "blocking",
+        };
+    } catch (error) {
+        console.error("Error in getStaticPaths:", error);
+        return { paths: [], fallback: "blocking" };
+    }
+}
 
-        const loadArticle = async () => {
-            try {
-                const q = query(
-                    collection(db, "news"),
-                    where("slug", "==", slug),
-                    where("status", "==", "published"),
-                    limit(1)
-                );
-                const querySnapshot = await getDocs(q);
+export async function getStaticProps({ params }: { params: { slug: string } }) {
+    try {
+        const q = query(
+            collection(db, "news"),
+            where("slug", "==", params.slug),
+            where("status", "==", "published"),
+            limit(1)
+        );
+        const querySnapshot = await getDocs(q);
 
-                if (querySnapshot.empty) {
-                    router.push("/404");
-                    return;
-                }
+        if (querySnapshot.empty) {
+            return { notFound: true };
+        }
 
-                const doc = querySnapshot.docs[0];
-                const data = {
-                    id: doc.id,
-                    ...doc.data(),
-                    publishedAt: doc.data().publishedAt?.toDate() || new Date(),
-                } as NewsArticle;
-                setArticle(data);
-
-                // Load related articles
-                const relatedQuery = query(
-                    collection(db, "news"),
-                    where("status", "==", "published"),
-                    where("category", "==", data.category),
-                    orderBy("publishedAt", "desc"),
-                    limit(4)
-                );
-                const relatedSnapshot = await getDocs(relatedQuery);
-                const related = relatedSnapshot.docs
-                    .filter(d => d.id !== doc.id)
-                    .slice(0, 3)
-                    .map(d => ({
-                        id: d.id,
-                        title: d.data().title,
-                        slug: d.data().slug,
-                        featuredImage: d.data().featuredImage,
-                        publishedAt: d.data().publishedAt?.toDate() || new Date(),
-                    }));
-                setRelatedArticles(related);
-            } catch (error) {
-                console.error("Error loading article:", error);
-            } finally {
-                setLoading(false);
-            }
+        const doc = querySnapshot.docs[0];
+        const data = doc.data();
+        const article = {
+            id: doc.id,
+            title: data.title || "",
+            slug: data.slug || "",
+            excerpt: data.excerpt || "",
+            content: data.content || "",
+            thumbnail: data.thumbnail || "",
+            author: data.author || "",
+            keywords: data.keywords || [],
+            published_at: data.published_at?.toDate()?.toISOString() || new Date().toISOString(),
         };
 
-        loadArticle();
-    }, [slug]);
+        // Load related articles
+        const relatedQuery = query(
+            collection(db, "news"),
+            where("status", "==", "published"),
+            orderBy("published_at", "desc"),
+            limit(4)
+        );
+        const relatedSnapshot = await getDocs(relatedQuery);
+        const relatedArticles = relatedSnapshot.docs
+            .filter(d => d.id !== doc.id)
+            .slice(0, 3)
+            .map(d => ({
+                id: d.id,
+                title: d.data().title,
+                slug: d.data().slug,
+                thumbnail: d.data().thumbnail,
+                published_at: d.data().published_at?.toDate()?.toISOString() || new Date().toISOString(),
+            }));
 
-    if (loading) {
+        return {
+            props: {
+                article,
+                relatedArticles,
+            },
+            revalidate: 60,
+        };
+    } catch (error) {
+        console.error("Error in getStaticProps:", error);
+        return { notFound: true };
+    }
+}
+
+export default function NewsDetail({ article, relatedArticles }: { article: NewsArticle, relatedArticles: RelatedArticle[] }) {
+    const router = useRouter();
+
+    if (router.isFallback) {
         return (
             <PageLayout activePage="news">
                 <div className="flex items-center justify-center min-h-[50vh]">
@@ -105,13 +120,15 @@ export default function NewsDetail() {
 
     if (!article) return null;
 
+    const publishedDate = new Date(article.published_at);
+
     // JSON-LD structured data for SEO
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "NewsArticle",
         headline: article.title,
-        description: article.metaDescription || article.excerpt,
-        image: article.featuredImage,
+        description: article.excerpt,
+        image: article.thumbnail,
         author: {
             "@type": "Person",
             name: article.author,
@@ -124,25 +141,25 @@ export default function NewsDetail() {
                 url: "https://mandalabumantara.com/logo.png",
             },
         },
-        datePublished: article.publishedAt.toISOString(),
-        dateModified: article.publishedAt.toISOString(),
+        datePublished: publishedDate.toISOString(),
+        dateModified: publishedDate.toISOString(),
     };
 
     return (
         <>
             <Head>
-                <title>{article.metaTitle || article.title} | Mandala Bumantara</title>
-                <meta name="description" content={article.metaDescription || article.excerpt} />
-                <meta name="keywords" content={article.tags?.join(", ")} />
-                <meta property="og:title" content={article.metaTitle || article.title} />
-                <meta property="og:description" content={article.metaDescription || article.excerpt} />
+                <title>{article.title} | Mandala Bumantara</title>
+                <meta name="description" content={article.excerpt} />
+                <meta name="keywords" content={article.keywords?.join(", ")} />
+                <meta property="og:title" content={article.title} />
+                <meta property="og:description" content={article.excerpt} />
                 <meta property="og:type" content="article" />
-                <meta property="og:image" content={article.featuredImage} />
+                <meta property="og:image" content={article.thumbnail} />
                 <meta property="og:url" content={`https://mandalabumantara.com/news/${article.slug}`} />
                 <meta name="twitter:card" content="summary_large_image" />
-                <meta name="twitter:title" content={article.metaTitle || article.title} />
-                <meta name="twitter:description" content={article.metaDescription || article.excerpt} />
-                <meta name="twitter:image" content={article.featuredImage} />
+                <meta name="twitter:title" content={article.title} />
+                <meta name="twitter:description" content={article.excerpt} />
+                <meta name="twitter:image" content={article.thumbnail} />
                 <link rel="canonical" href={`https://mandalabumantara.com/news/${article.slug}`} />
                 <script
                     type="application/ld+json"
@@ -167,14 +184,9 @@ export default function NewsDetail() {
                             </nav>
 
                             {/* Category & Date */}
-                            <div className="flex items-center gap-4 mb-6">
-                                <span className="px-4 py-1 bg-amber-100 text-amber-700 rounded-full text-sm font-medium capitalize">
-                                    {article.category}
-                                </span>
-                                <time className="text-slate-500" dateTime={article.publishedAt.toISOString()}>
-                                    {article.publishedAt.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
-                                </time>
-                            </div>
+                            <time className="text-slate-500" dateTime={publishedDate.toISOString()}>
+                                {publishedDate.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                            </time>
 
                             {/* Title */}
                             <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-6 leading-tight">
@@ -196,15 +208,15 @@ export default function NewsDetail() {
                             </div>
 
                             {/* Featured Image */}
-                            {article.featuredImage && (
+                            {article.thumbnail ? (
                                 <figure className="mb-10">
                                     <img
-                                        src={article.featuredImage}
+                                        src={article.thumbnail}
                                         alt={article.title}
                                         className="w-full h-auto rounded-2xl"
                                     />
                                 </figure>
-                            )}
+                            ) : null}
 
                             {/* Content */}
                             <div
@@ -218,14 +230,14 @@ export default function NewsDetail() {
                                 dangerouslySetInnerHTML={{ __html: article.content }}
                             />
 
-                            {/* Tags */}
-                            {article.tags && article.tags.length > 0 && (
+                            {/* Tags/Keywords */}
+                            {article.keywords && article.keywords.length > 0 && (
                                 <div className="mt-10 pt-8 border-t border-slate-200">
-                                    <h3 className="text-sm font-medium text-slate-500 mb-3">Tags:</h3>
+                                    <h3 className="text-sm font-medium text-slate-500 mb-3">Keywords:</h3>
                                     <div className="flex flex-wrap gap-2">
-                                        {article.tags.map((tag) => (
-                                            <span key={tag} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm">
-                                                #{tag}
+                                        {article.keywords.map((keyword) => (
+                                            <span key={keyword} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm">
+                                                #{keyword}
                                             </span>
                                         ))}
                                     </div>
@@ -271,29 +283,32 @@ export default function NewsDetail() {
                             <div className="max-w-6xl mx-auto">
                                 <h2 className="text-3xl font-bold text-slate-900 mb-8">Artikel Terkait</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    {relatedArticles.map((related) => (
-                                        <Link
-                                            key={related.id}
-                                            href={`/news/${related.slug}`}
-                                            className="group bg-white rounded-xl overflow-hidden border border-slate-200 hover:border-amber-500 hover:shadow-lg transition-all"
-                                        >
-                                            <div className="aspect-video bg-gradient-to-br from-blue-900 to-blue-700 overflow-hidden">
-                                                {related.featuredImage ? (
-                                                    <img src={related.featuredImage} alt={related.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-                                                ) : (
-                                                    <div className="flex items-center justify-center h-full text-white text-3xl">📰</div>
-                                                )}
-                                            </div>
-                                            <div className="p-4">
-                                                <time className="text-xs text-slate-500">
-                                                    {related.publishedAt.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
-                                                </time>
-                                                <h3 className="font-semibold text-slate-900 mt-1 group-hover:text-amber-600 line-clamp-2">
-                                                    {related.title}
-                                                </h3>
-                                            </div>
-                                        </Link>
-                                    ))}
+                                    {relatedArticles.map((related) => {
+                                        const relatedDate = new Date(related.published_at);
+                                        return (
+                                            <Link
+                                                key={related.id}
+                                                href={`/news/${related.slug}`}
+                                                className="group bg-white rounded-xl overflow-hidden border border-slate-200 hover:border-amber-500 hover:shadow-lg transition-all"
+                                            >
+                                                <div className="aspect-video bg-gradient-to-br from-blue-900 to-blue-700 overflow-hidden">
+                                                    {related.thumbnail ? (
+                                                        <img src={related.thumbnail} alt={related.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                                    ) : (
+                                                        <div className="flex items-center justify-center h-full text-white text-3xl">📰</div>
+                                                    )}
+                                                </div>
+                                                <div className="p-4">
+                                                    <time className="text-xs text-slate-500">
+                                                        {relatedDate.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                                                    </time>
+                                                    <h3 className="font-semibold text-slate-900 mt-1 group-hover:text-amber-600 line-clamp-2">
+                                                        {related.title}
+                                                    </h3>
+                                                </div>
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </Section>

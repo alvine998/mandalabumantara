@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -22,6 +23,9 @@ const db = getFirestore(app);
 // Initialize Auth
 const auth = getAuth(app);
 
+// Initialize Storage
+const storage = getStorage(app);
+
 // Initialize Analytics (only on client-side)
 let analytics: ReturnType<typeof getAnalytics> | null = null;
 if (typeof window !== "undefined") {
@@ -32,4 +36,4 @@ if (typeof window !== "undefined") {
   });
 }
 
-export { app, db, auth, analytics };
+export { app, db, auth, storage, analytics };

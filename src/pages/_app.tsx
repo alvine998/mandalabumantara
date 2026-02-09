@@ -1,9 +1,6 @@
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
 import { useEffect } from "react";
-import Swup from "swup";
-import SwupFadeTheme from "@swup/fade-theme";
-import SwupScrollPlugin from "@swup/scroll-plugin";
 import SplashScreen from "@/components/SplashScreen";
 import Lenis from "@studio-freight/lenis";
 import Head from "next/head";
@@ -38,39 +35,10 @@ export default function App({ Component, pageProps }: AppProps) {
     }
     rafId = requestAnimationFrame(raf);
 
-    // Initialize Swup
-    const swup = new Swup({
-      plugins: [
-        new SwupFadeTheme(),
-        new SwupScrollPlugin({
-          doScrollingRightAway: false,
-          animateScroll: {
-            betweenPages: false,
-            samePageWithHash: false,
-            samePage: false,
-          }, // Disable Swup scroll animation since Lenis handles it
-
-
-        }),
-      ],
-      containers: ["[data-swup]"],
-      cache: true,
-      animateHistoryBrowsing: true,
-      linkSelector: 'a[href^="/"]:not([data-no-swup])',
-      skipPopStateHandling: () => false,
-    });
-
-    // Handle page updates after Swup navigation
-    swup.hooks.on("content:replace", () => {
-      // Scroll to top smoothly using Lenis
-      lenis.scrollTo(0, { immediate: false });
-    });
-
     // Cleanup on unmount
     return () => {
       cancelAnimationFrame(rafId);
       lenis.destroy();
-      swup.destroy();
       delete (window as any).lenis;
     };
   }, []);

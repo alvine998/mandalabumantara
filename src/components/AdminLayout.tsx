@@ -25,7 +25,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <Sidebar />
             <div className="flex-1 ml-64">
                 <Topbar />
-                <main className="mt-16 p-8" data-swup>
+                <main className="mt-16 p-8">
                     {children}
                 </main>
             </div>

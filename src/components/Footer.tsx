@@ -1,9 +1,24 @@
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import SwupLink from "./SwupLink";
-import { Twitter, Github, Linkedin, MessageCircle } from "lucide-react";
+import { Youtube, Instagram, Facebook, Music2 } from "lucide-react";
+import { companyProfileService, CompanyProfile } from "@/lib/services/company-profile-service";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [profile, setProfile] = useState<CompanyProfile | null>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const data = await companyProfileService.getProfile();
+        setProfile(data);
+      } catch (err) {
+        console.error("Error loading profile into footer:", err);
+      }
+    };
+    loadProfile();
+  }, []);
 
   const footerSections = {
     company: [
@@ -14,7 +29,6 @@ export default function Footer() {
     project: [
       { href: "/mandala-bumi-nusantara", label: "Mandala Bumi Nusantara" },
       { href: "/vistara", label: "Vistara" },
-      // { href: "#", label: "API Reference" },
     ],
     legal: [
       { href: "/privacy-policy", label: "Privacy Policy" },
@@ -24,11 +38,11 @@ export default function Footer() {
   };
 
   const socialLinks = [
-    { href: "https://twitter.com/mandalabumantara", label: "Twitter", icon: Twitter },
-    { href: "https://github.com/mandalabumantara", label: "GitHub", icon: Github },
-    { href: "https://linkedin.com/mandalabumantara", label: "LinkedIn", icon: Linkedin },
-    { href: "https://discord.com/mandalabumantara", label: "Discord", icon: MessageCircle },
-  ];
+    { href: profile?.youtube, label: "YouTube", icon: Youtube },
+    { href: profile?.tiktok, label: "TikTok", icon: Music2 }, // Music2 as a fallback for TikTok if not in lucide
+    { href: profile?.instagram, label: "Instagram", icon: Instagram },
+    { href: profile?.facebook, label: "Facebook", icon: Facebook },
+  ].filter(link => link.href);
 
   return (
     <footer className="py-16 px-6 sm:px-8 lg:px-12 border-t border-slate-200 bg-gradient-to-br from-slate-50 to-white">
@@ -38,13 +52,20 @@ export default function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <Image src="/images/logo.png" alt="Logo" width={60} height={60} />
+              <div className="relative w-12 h-12">
+                <Image
+                  src={profile?.logo || "/images/logo.png"}
+                  alt="Logo"
+                  fill
+                  className="object-contain"
+                />
+              </div>
               <span className="text-xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent">
-                Mandala Bumantara
+                {profile?.name || "Mandala Bumantara"}
               </span>
             </div>
             <p className="text-slate-600 mb-6 leading-relaxed max-w-sm">
-              Building amazing web experiences with smooth transitions and beautiful design. Powered by modern technologies.
+              {profile?.description || "Building amazing web experiences with smooth transitions and beautiful design. Powered by modern technologies."}
             </p>
             <div className="flex space-x-3">
               {socialLinks.map((social) => {
@@ -115,39 +136,17 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Newsletter Section */}
-        <div className="py-8 border-t border-slate-200">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="text-center md:text-left">
-              <h3 className="font-semibold text-slate-900 mb-2">Stay Updated</h3>
-              <p className="text-slate-600 text-sm">
-                Subscribe to our newsletter for the latest updates and features.
-              </p>
-            </div>
-            <div className="flex w-full md:w-auto max-w-md">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-2.5 rounded-l-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-              />
-              <button className="px-6 py-2.5 bg-gradient-to-r from-blue-900 to-blue-800 text-white rounded-r-lg font-medium hover:shadow-lg hover:shadow-blue-900/50 transition-all duration-300">
-                Subscribe
-              </button>
-            </div>
-          </div>
-        </div>
-
         {/* Bottom Bar */}
         <div className="pt-8 border-t border-slate-200">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-4">
             <p className="text-slate-500 text-sm">
               © {currentYear} Mandala Bumantara. All rights reserved.
             </p>
-            <div className="flex items-center space-x-6 text-sm text-slate-500">
+            {/* <div className="flex items-center space-x-6 text-sm text-slate-500">
               <span>Made with ❤️ in Indonesia</span>
               <span className="hidden sm:inline">•</span>
               <span className="hidden sm:inline">Powered by Next.js</span>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

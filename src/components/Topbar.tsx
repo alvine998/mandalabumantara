@@ -97,7 +97,7 @@ export default function Topbar({ className = "", title }: TopbarProps) {
             {/* Right Section */}
             <div className="flex items-center space-x-4">
                 {/* Search */}
-                <div className="relative">
+                {/* <div className="relative">
                     {showSearch ? (
                         <div className="flex items-center">
                             <input
@@ -139,7 +139,7 @@ export default function Topbar({ className = "", title }: TopbarProps) {
                             </svg>
                         </button>
                     )}
-                </div>
+                </div> */}
 
                 {/* Notifications */}
                 <button className="relative p-2 text-slate-400 hover:text-slate-600 transition-colors rounded-full hover:bg-slate-100">

@@ -21,19 +21,6 @@ body {
   }
 }
 
-/* Swup transitions */
-html.is-changing .swup-transition-fade {
-  transition: opacity 0.3s ease-in-out;
-}
-
-html.is-animating .swup-transition-fade {
-  opacity: 0;
-}
-
-html.is-rendering .swup-transition-fade {
-  opacity: 1;
-}
-
 /* Smooth scrolling - handled by Lenis */
 html {
   scroll-behavior: auto; /* Lenis handles smooth scrolling */

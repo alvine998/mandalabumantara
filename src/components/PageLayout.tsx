@@ -36,7 +36,7 @@ export default function PageLayout({
       <div>
         <Navigation />
       </div>
-      <main data-swup>
+      <main>
         {children}
       </main>
       <div>

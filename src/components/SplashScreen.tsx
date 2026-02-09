@@ -66,7 +66,7 @@ export default function SplashScreen() {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-gradient-to-br from-blue-950 via-blue-900 to-blue-800 transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-100"
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-blue-900 transition-opacity duration-500 ${isAnimating ? "opacity-0" : "opacity-100"
         }`}
     >
       {/* Animated Logo */}

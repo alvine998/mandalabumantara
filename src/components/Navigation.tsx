@@ -7,12 +7,10 @@ export default function Navigation() {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [, forceUpdate] = useState({});
 
-  // Get current path from window location for reliability
+  // Get current path for active states
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
-  const isHome = currentPath === '/';
-  const showScrolledStyle = isScrolled || !isHome || mobileMenuOpen;
+  const showScrolledStyle = isScrolled || mobileMenuOpen;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -32,26 +30,12 @@ export default function Navigation() {
     }
   }, [mobileMenuOpen]);
 
-  // Force re-render on Swup navigation
-  useEffect(() => {
-    const handleNavigation = () => {
-      forceUpdate({});
-    };
-
-    document.addEventListener("swup:contentReplaced", handleNavigation);
-    document.addEventListener("swup:pageView", handleNavigation);
-
-    return () => {
-      document.removeEventListener("swup:contentReplaced", handleNavigation);
-      document.removeEventListener("swup:pageView", handleNavigation);
-    };
-  }, []);
-
   const [projectsOpen, setProjectsOpen] = useState(false);
 
   const navLinks = [
     { href: "/", label: "Home", key: "home", isActive: currentPath === "/" },
     { href: "/about", label: "About", key: "about", isActive: currentPath === "/about" },
+    { href: "/news", label: "News", key: "news", isActive: currentPath.startsWith("/news") },
     { href: "/gallery", label: "Gallery", key: "gallery", isActive: currentPath === "/gallery" },
     { href: "/contact", label: "Contact", key: "contact", isActive: currentPath === "/contact" },
   ];

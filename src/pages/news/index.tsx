@@ -11,58 +11,59 @@ interface NewsArticle {
     title: string;
     slug: string;
     excerpt: string;
-    category: string;
-    featuredImage: string;
+    thumbnail: string;
     author: string;
-    publishedAt: Date;
+    published_at: string; // Changed to string for serialization
+    status: string;
 }
 
 const ITEMS_PER_PAGE = 9;
 
-export default function NewsPage() {
-    const [articles, setArticles] = useState<NewsArticle[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [selectedCategory, setSelectedCategory] = useState("all");
+export async function getStaticProps() {
+    try {
+        const q = query(
+            collection(db, "news"),
+            where("status", "==", "published"),
+            orderBy("published_at", "desc")
+        );
+        const querySnapshot = await getDocs(q);
+        const articles = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                title: data.title || "",
+                slug: data.slug || "",
+                excerpt: data.excerpt || "",
+                thumbnail: data.thumbnail || "",
+                author: data.author || "",
+                status: data.status || "",
+                published_at: data.published_at?.toDate()?.toISOString() || new Date().toISOString(),
+                // Explicitly excluding or serializing other timestamps to avoid Next.js serialization errors
+            };
+        });
 
-    useEffect(() => {
-        const loadArticles = async () => {
-            try {
-                const q = query(
-                    collection(db, "news"),
-                    where("status", "==", "published"),
-                    orderBy("publishedAt", "desc")
-                );
-                const querySnapshot = await getDocs(q);
-                const data = querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data(),
-                    publishedAt: doc.data().publishedAt?.toDate() || new Date(),
-                })) as NewsArticle[];
-                setArticles(data);
-            } catch (error) {
-                console.error("Error loading articles:", error);
-            } finally {
-                setLoading(false);
-            }
+        return {
+            props: {
+                articles,
+            },
+            revalidate: 60, // Revalidate every 60 seconds
         };
-        loadArticles();
-    }, []);
+    } catch (error) {
+        console.error("Error in getStaticProps:", error);
+        return {
+            props: {
+                articles: [],
+            },
+            revalidate: 60,
+        };
+    }
+}
 
-    const categories = [
-        { id: "all", label: "Semua" },
-        { id: "news", label: "Berita" },
-        { id: "article", label: "Artikel" },
-        { id: "press-release", label: "Press Release" },
-        { id: "announcement", label: "Pengumuman" },
-    ];
+export default function NewsPage({ articles }: { articles: NewsArticle[] }) {
+    const [currentPage, setCurrentPage] = useState(1);
 
-    const filteredArticles = selectedCategory === "all"
-        ? articles
-        : articles.filter(a => a.category === selectedCategory);
-
-    const totalPages = Math.ceil(filteredArticles.length / ITEMS_PER_PAGE);
-    const paginatedArticles = filteredArticles.slice(
+    const totalPages = Math.ceil(articles.length / ITEMS_PER_PAGE);
+    const paginatedArticles = articles.slice(
         (currentPage - 1) * ITEMS_PER_PAGE,
         currentPage * ITEMS_PER_PAGE
     );
@@ -85,8 +86,8 @@ export default function NewsPage() {
                         {/* Header */}
                         <div className="text-center mb-12">
                             <h1 className="text-5xl sm:text-6xl font-bold mb-6">
-                                <span className="bg-gradient-to-r from-blue-900 via-blue-800 to-amber-500 bg-clip-text text-transparent">
-                                    Berita & Artikel
+                                <span className="bg-gradient-to-r from-amber-600 via-amber-600 to-amber-500 bg-clip-text text-transparent">
+                                    Berita
                                 </span>
                             </h1>
                             <p className="text-xl text-slate-600 max-w-2xl mx-auto">
@@ -94,28 +95,9 @@ export default function NewsPage() {
                             </p>
                         </div>
 
-                        {/* Category Filter */}
-                        <div className="flex flex-wrap justify-center gap-3 mb-12">
-                            {categories.map((cat) => (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => { setSelectedCategory(cat.id); setCurrentPage(1); }}
-                                    className={`px-6 py-3 rounded-full font-medium transition-all ${selectedCategory === cat.id
-                                            ? "bg-gradient-to-r from-blue-900 to-amber-500 text-white shadow-lg"
-                                            : "bg-white text-slate-700 border border-slate-200 hover:border-amber-500"
-                                        }`}
-                                >
-                                    {cat.label}
-                                </button>
-                            ))}
-                        </div>
 
                         {/* Articles Grid */}
-                        {loading ? (
-                            <div className="flex justify-center py-12">
-                                <div className="w-8 h-8 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
-                            </div>
-                        ) : paginatedArticles.length === 0 ? (
+                        {articles.length === 0 ? (
                             <div className="text-center py-12">
                                 <div className="text-5xl mb-4">📰</div>
                                 <p className="text-slate-500">Belum ada artikel dalam kategori ini</p>
@@ -123,46 +105,44 @@ export default function NewsPage() {
                         ) : (
                             <>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                                    {paginatedArticles.map((article) => (
-                                        <article
-                                            key={article.id}
-                                            className="group bg-white rounded-2xl overflow-hidden border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300"
-                                        >
-                                            <Link href={`/news/${article.slug}`}>
-                                                <div className="aspect-video bg-gradient-to-br from-blue-900 to-blue-700 relative overflow-hidden">
-                                                    {article.featuredImage ? (
-                                                        <img
-                                                            src={article.featuredImage}
-                                                            alt={article.title}
-                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                        />
-                                                    ) : (
-                                                        <div className="flex items-center justify-center h-full text-white text-5xl">📰</div>
-                                                    )}
-                                                    <div className="absolute top-4 left-4">
-                                                        <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-slate-700 text-sm font-medium rounded-full capitalize">
-                                                            {article.category}
-                                                        </span>
+                                    {paginatedArticles.map((article) => {
+                                        const publishedDate = new Date(article.published_at);
+                                        return (
+                                            <article
+                                                key={article.id}
+                                                className="group bg-white rounded-2xl overflow-hidden border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300"
+                                            >
+                                                <Link href={`/news/${article.slug}`}>
+                                                    <div className="aspect-video bg-gradient-to-br from-blue-900 to-blue-700 relative overflow-hidden">
+                                                        {article.thumbnail ? (
+                                                            <img
+                                                                src={article.thumbnail}
+                                                                alt={article.title}
+                                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                            />
+                                                        ) : (
+                                                            <div className="flex items-center justify-center h-full text-white text-5xl">📰</div>
+                                                        )}
                                                     </div>
-                                                </div>
-                                                <div className="p-6">
-                                                    <time className="text-sm text-slate-500" dateTime={article.publishedAt.toISOString()}>
-                                                        {article.publishedAt.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
-                                                    </time>
-                                                    <h2 className="text-xl font-bold text-slate-900 mt-2 mb-3 group-hover:text-amber-600 transition-colors line-clamp-2">
-                                                        {article.title}
-                                                    </h2>
-                                                    <p className="text-slate-600 line-clamp-3">{article.excerpt}</p>
-                                                    <div className="mt-4 flex items-center text-amber-600 font-medium">
-                                                        Baca selengkapnya
-                                                        <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                                                        </svg>
+                                                    <div className="p-6">
+                                                        <time className="text-sm text-slate-500" dateTime={publishedDate.toISOString()}>
+                                                            {publishedDate.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
+                                                        </time>
+                                                        <h2 className="text-xl font-bold text-slate-900 mt-2 mb-3 group-hover:text-amber-600 transition-colors line-clamp-2">
+                                                            {article.title}
+                                                        </h2>
+                                                        <p className="text-slate-600 line-clamp-3">{article.excerpt}</p>
+                                                        <div className="mt-4 flex items-center text-amber-600 font-medium">
+                                                            Baca selengkapnya
+                                                            <svg className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                                                            </svg>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </Link>
-                                        </article>
-                                    ))}
+                                                </Link>
+                                            </article>
+                                        );
+                                    })}
                                 </div>
 
                                 {/* Pagination */}
@@ -181,8 +161,8 @@ export default function NewsPage() {
                                                 key={page}
                                                 onClick={() => setCurrentPage(page)}
                                                 className={`w-10 h-10 rounded-lg font-medium ${currentPage === page
-                                                        ? "bg-blue-900 text-white"
-                                                        : "border border-slate-200 hover:bg-slate-50"
+                                                    ? "bg-blue-900 text-white"
+                                                    : "border border-slate-200 hover:bg-slate-50"
                                                     }`}
                                                 aria-label={`Page ${page}`}
                                                 aria-current={currentPage === page ? "page" : undefined}

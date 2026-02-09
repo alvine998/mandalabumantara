@@ -5,26 +5,137 @@ import VideoHero from "@/components/VideoHero";
 import Section from "@/components/Section";
 import FeatureCard from "@/components/FeatureCard";
 import Button from "@/components/Button";
-import SwupLink from "@/components/SwupLink";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
 
-const VIDEO_OPTIONS = [
-  {
-    type: "youtube",
-    src: "https://firebasestorage.googleapis.com/v0/b/sales-midland.firebasestorage.app/o/Konten%201%20vistara.mp4?alt=media&token=adc090e2-c7e6-4f88-981e-fa5432a9ce6d", // Dummy example
+interface HeroSection {
+  badge: string;
+  title: string;
+  titleGradient: string;
+  description: string;
+  videoUrlDesktop: string;
+  videoUrlMobile: string;
+  primaryButtonLabel: string;
+  secondaryButtonLabel: string;
+  secondaryButtonLink: string;
+}
+
+interface Stat {
+  value: string;
+  label: string;
+}
+
+interface OverviewSection {
+  badge: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  primaryButtonLabel: string;
+  secondaryButtonLabel: string;
+  secondaryButtonLink: string;
+  stats: Stat[];
+}
+
+interface Division {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface Feature {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+interface HomePageData {
+  hero: HeroSection;
+  overview: OverviewSection;
+  divisions: Division[];
+  features: Feature[];
+}
+
+const defaultData: HomePageData = {
+  hero: {
+    badge: "✨ Welcome to the Future",
+    title: "Experiences",
+    titleGradient: "Build Amazing",
+    description: "Create stunning web experiences with smooth transitions and beautiful design.",
+    videoUrlDesktop: "https://firebasestorage.googleapis.com/v0/b/sales-midland.firebasestorage.app/o/Konten%201%20vistara.mp4?alt=media&token=adc090e2-c7e6-4f88-981e-fa5432a9ce6d",
+    videoUrlMobile: "https://firebasestorage.googleapis.com/v0/b/sales-midland.firebasestorage.app/o/Konten%201%20vistara.mp4?alt=media&token=adc090e2-c7e6-4f88-981e-fa5432a9ce6d",
+    primaryButtonLabel: "Start Building",
+    secondaryButtonLabel: "Explore Features",
+    secondaryButtonLink: "/features",
   },
-];
+  overview: {
+    badge: "🏢 Solusi Properti Terintegrasi",
+    title: "Mandala Bumantara",
+    subtitle: "Ekosistem Properti Terpadu",
+    description: "Dari konsultasi hingga perawatan, kami menyediakan solusi properti menyeluruh dengan standar kualitas terbaik dan komitmen kepada kepuasan pelanggan.",
+    primaryButtonLabel: "Konsultasi Gratis",
+    secondaryButtonLabel: "Tentang Kami",
+    secondaryButtonLink: "/mandala-bumi-nusantara",
+    stats: [
+      { value: "500+", label: "Unit Terjual" },
+      { value: "50+", label: "Proyek Selesai" },
+      { value: "98%", label: "Kepuasan Klien" },
+      { value: "15+", label: "Tahun Pengalaman" },
+    ],
+  },
+  divisions: [
+    { icon: "🏗️", title: "Developer", description: "Pengembangan dan penjualan properti berkualitas dengan lokasi strategis and desain modern." },
+    { icon: "👷", title: "Kontraktor", description: "Jasa konstruksi profesional dengan standar kualitas tinggi, tepat waktu, dan sesuai anggaran." },
+    { icon: "🎨", title: "Interior", description: "Layanan desain dan konstruksi interior untuk meningkatkan nilai dan estetika properti Anda." },
+    { icon: "💼", title: "Konsultan", description: "Saran ahli tentang investasi, pengembangan, dan manajemen properti yang optimal." },
+    { icon: "📦", title: "Material", description: "Penyedia material bangunan berkualitas premium dengan harga kompetitif dan pengiriman cepat." },
+    { icon: "🏠", title: "Home Service", description: "Layanan perawatan dan perbaikan rumah untuk kenyamanan hunian modern Anda." },
+  ],
+  features: [
+    { icon: "🎯", title: "Lokasi Strategis", description: "Properti berlokasi di area premium dengan akses mudah ke pusat bisnis, pendidikan, dan fasilitas umum." },
+    { icon: "🏆", title: "Kualitas Terjamin", description: "Standar konstruksi internasional dengan material berkualitas tinggi dan pengawasan ketat." },
+    { icon: "💎", title: "Investasi Menguntungkan", description: "Nilai properti yang terus meningkat dengan ROI yang menarik untuk investor jangka panjang." },
+  ],
+};
 
 export default function Home() {
-  const [videoOption, setVideoOption] = useState(VIDEO_OPTIONS[0]);
-
-  useEffect(() => {
-    // Randomize video on mount (client-side only to avoid hydration mismatch)
-    const randomIndex = Math.floor(Math.random() * VIDEO_OPTIONS.length);
-    setVideoOption(VIDEO_OPTIONS[randomIndex]);
-  }, []);
-
+  const [data, setData] = useState<HomePageData>(defaultData);
+  const [loading, setLoading] = useState(true);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const router = useRouter();
+
+  // Load data from Firestore
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const docRef = doc(db, "pages", "home");
+        const docSnap = await getDoc(docRef);
+        let homeData = defaultData;
+        if (docSnap.exists()) {
+          homeData = { ...defaultData, ...docSnap.data() } as HomePageData;
+        }
+
+        // Fetch latest Home Video from Gallery Service
+        const { galleryService } = await import("@/lib/services/gallery-service");
+        const homeGalleries = await galleryService.getGalleriesByType("Home");
+        if (homeGalleries.length > 0) {
+          const latestHome = homeGalleries[0];
+          const desktopVideo = latestHome.images.find(img => img.type === "video_desktop")?.url;
+          const mobileVideo = latestHome.images.find(img => img.type === "video_mobile")?.url;
+
+          if (desktopVideo) homeData.hero.videoUrlDesktop = desktopVideo;
+          if (mobileVideo) homeData.hero.videoUrlMobile = mobileVideo;
+        }
+
+        setData(homeData);
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -36,39 +147,23 @@ export default function Home() {
   }, []);
 
   // Search state
-  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const searchRef = useRef<HTMLDivElement>(null);
 
-  // Searchable content
+  // Searchable content (could be made dynamic too, but for now we keep the layout consistent with searchableContent)
   const searchableContent = [
-    // Navigation Pages
     { title: "Home", description: "Halaman utama", href: "/", category: "Halaman" },
     { title: "About", description: "Tentang kami", href: "/about", category: "Halaman" },
     { title: "Gallery", description: "Galeri proyek", href: "/gallery", category: "Halaman" },
     { title: "Contact", description: "Hubungi kami", href: "/contact", category: "Halaman" },
-
-    // Projects
     { title: "Mandala Bumi Nusantara", description: "Filosofi dan unit bisnis", href: "/mandala-bumi-nusantara", category: "Proyek" },
     { title: "Vistara", description: "Proyek properti terintegrasi", href: "/vistara", category: "Proyek" },
-
-    // Business Divisions
-    { title: "Developer", description: "Pengembangan properti berkualitas", href: "/vistara", category: "Divisi Bisnis" },
-    { title: "Kontraktor", description: "Jasa konstruksi profesional", href: "/vistara", category: "Divisi Bisnis" },
-    { title: "Interior", description: "Desain dan konstruksi interior", href: "/vistara", category: "Divisi Bisnis" },
-    { title: "Konsultan", description: "Konsultasi properti ahli", href: "/vistara", category: "Divisi Bisnis" },
-    { title: "Material", description: "Penyedia material bangunan", href: "/vistara", category: "Divisi Bisnis" },
-    { title: "Home Service", description: "Perawatan dan perbaikan rumah", href: "/vistara", category: "Divisi Bisnis" },
-
-    // Services/Features
-    { title: "Lokasi Strategis", description: "Properti di area premium", href: "#", category: "Keunggulan" },
-    { title: "Kualitas Terjamin", description: "Standar konstruksi internasional", href: "#", category: "Keunggulan" },
-    { title: "Investasi Menguntungkan", description: "ROI menarik untuk investor", href: "#", category: "Keunggulan" },
+    ...data.divisions.map(d => ({ title: d.title, description: d.description, href: "/vistara", category: "Divisi Bisnis" })),
+    ...data.features.map(f => ({ title: f.title, description: f.description, href: "#", category: "Keunggulan" })),
   ];
 
-  // Filter search results
   const searchResults = searchQuery.trim()
     ? searchableContent.filter(item =>
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -76,7 +171,6 @@ export default function Home() {
     ).slice(0, 8)
     : [];
 
-  // Handle click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
@@ -88,7 +182,6 @@ export default function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Handle keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!showSuggestions || searchResults.length === 0) return;
 
@@ -116,7 +209,6 @@ export default function Home() {
     }
   };
 
-  // Handle result selection
   const handleSelectResult = (result: typeof searchableContent[0]) => {
     if (result.href === "#") {
       setShowSuggestions(false);
@@ -130,98 +222,63 @@ export default function Home() {
     }
   };
 
-  const features = [
-    {
-      icon: "🎯",
-      title: "Lokasi Strategis",
-      description:
-        "Properti berlokasi di area premium dengan akses mudah ke pusat bisnis, pendidikan, dan fasilitas umum.",
-    },
-    {
-      icon: "🏆",
-      title: "Kualitas Terjamin",
-      description:
-        "Standar konstruksi internasional dengan material berkualitas tinggi dan pengawasan ketat.",
-    },
-    {
-      icon: "💎",
-      title: "Investasi Menguntungkan",
-      description:
-        "Nilai properti yang terus meningkat dengan ROI yang menarik untuk investor jangka panjang.",
-    },
-  ];
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-white">
+        <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <PageLayout activePage="home">
       <VideoHero
-        videoType={videoOption.type as "local" | "youtube"}
-        videoSrc={videoOption.src}
-        badge="✨ Welcome to the Future"
-        title="Experiences"
-        titleGradient="Build Amazing"
-        description="Create stunning web experiences with smooth transitions and beautiful design. Powered by Swup for seamless navigation."
-        primaryButton={{ label: "Start Building" }}
-        secondaryButton={{ label: "Explore Features", href: "/features" }}
+        videoUrlDesktop={data.hero.videoUrlDesktop}
+        videoUrlMobile={data.hero.videoUrlMobile}
+        badge={data.hero.badge}
+        title={data.hero.title}
+        titleGradient={data.hero.titleGradient}
+        description={data.hero.description}
+        primaryButton={{ label: data.hero.primaryButtonLabel }}
+        secondaryButton={{ label: data.hero.secondaryButtonLabel, href: data.hero.secondaryButtonLink }}
       />
 
       {/* Company Overview Section */}
       <Section padding="large">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-4xl mx-auto mb-16">
-            {/* <div className="inline-block mb-6 px-4 py-2 bg-amber-100 rounded-full border border-amber-200">
-              <span className="text-sm font-medium text-amber-700">
-                🏢 Solusi Properti Terintegrasi
-              </span>
-            </div> */}
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 bg-clip-text text-transparent">
-                Mandala Bumantara
+                {data.overview.title}
               </span>
             </h1>
             <p className="text-lg sm:text-xl text-slate-600 mb-8 leading-relaxed">
-              Dari konsultasi hingga perawatan, kami menyediakan solusi properti menyeluruh
-              dengan standar kualitas terbaik dan komitmen kepada kepuasan pelanggan.
+              {data.overview.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button variant="primary" className="px-8 py-4 text-lg w-full sm:w-auto">
-                Konsultasi Gratis
+                {data.overview.primaryButtonLabel}
               </Button>
               <Button
                 variant="secondary"
-                href="/mandala-bumi-nusantara"
+                href={data.overview.secondaryButtonLink}
                 className="px-8 py-4 text-lg w-full sm:w-auto"
               >
-                Tentang Kami
+                {data.overview.secondaryButtonLabel}
               </Button>
             </div>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
-            <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-all">
-              <div className="text-4xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent mb-2">
-                500+
+            {data.overview.stats.map((stat, idx) => (
+              <div key={idx} className="text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-all">
+                <div className="text-4xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent mb-2">
+                  {stat.value}
+                </div>
+                <div className="text-slate-600 font-medium">{stat.label}</div>
               </div>
-              <div className="text-slate-600 font-medium">Unit Terjual</div>
-            </div>
-            <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-all">
-              <div className="text-4xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent mb-2">
-                50+
-              </div>
-              <div className="text-slate-600 font-medium">Proyek Selesai</div>
-            </div>
-            <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-all">
-              <div className="text-4xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent mb-2">
-                98%
-              </div>
-              <div className="text-slate-600 font-medium">Kepuasan Klien</div>
-            </div>
-            <div className="text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-all">
-              <div className="text-4xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent mb-2">
-                15+
-              </div>
-              <div className="text-slate-600 font-medium">Tahun Pengalaman</div>
-            </div>
+            ))}
           </div>
         </div>
       </Section>
@@ -238,48 +295,15 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-0">
-            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
-              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🏗️</div>
-              <h3 className="text-2xl font-bold mb-3 text-slate-900">Developer</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Pengembangan dan penjualan properti berkualitas dengan lokasi strategis dan desain modern.
-              </p>
-            </div>
-            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
-              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">👷</div>
-              <h3 className="text-2xl font-bold mb-3 text-slate-900">Kontraktor</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Jasa konstruksi profesional dengan standar kualitas tinggi, tepat waktu, dan sesuai anggaran.
-              </p>
-            </div>
-            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
-              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🎨</div>
-              <h3 className="text-2xl font-bold mb-3 text-slate-900">Interior</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Layanan desain dan konstruksi interior untuk meningkatkan nilai dan estetika properti Anda.
-              </p>
-            </div>
-            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
-              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">💼</div>
-              <h3 className="text-2xl font-bold mb-3 text-slate-900">Konsultan</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Saran ahli tentang investasi, pengembangan, dan manajemen properti yang optimal.
-              </p>
-            </div>
-            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
-              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">📦</div>
-              <h3 className="text-2xl font-bold mb-3 text-slate-900">Material</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Penyedia material bangunan berkualitas premium dengan harga kompetitif dan pengiriman cepat.
-              </p>
-            </div>
-            <div className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
-              <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🏠</div>
-              <h3 className="text-2xl font-bold mb-3 text-slate-900">Home Service</h3>
-              <p className="text-slate-600 leading-relaxed">
-                Layanan perawatan dan perbaikan rumah untuk kenyamanan hunian modern Anda.
-              </p>
-            </div>
+            {data.divisions.map((division, index) => (
+              <div key={index} className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
+                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">{division.icon}</div>
+                <h3 className="text-2xl font-bold mb-3 text-slate-900">{division.title}</h3>
+                <p className="text-slate-600 leading-relaxed">
+                  {division.description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </Section>
@@ -296,7 +320,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-0">
-            {features.map((feature, index) => (
+            {data.features.map((feature, index) => (
               <FeatureCard
                 key={index}
                 icon={feature.icon}
@@ -341,7 +365,6 @@ export default function Home() {
                 if (searchQuery) setShowSuggestions(true);
               }}
               onBlur={() => {
-                // Delay to allow click on suggestions
                 setTimeout(() => setIsFocused(false), 200);
               }}
               className="w-full bg-transparent border-none focus:ring-0 outline-none text-slate-800 placeholder-slate-500/80 h-10 px-3 text-sm sm:text-base focus:outline-none"
@@ -369,7 +392,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Suggestions Dropdown */}
           {showSuggestions && searchResults.length > 0 && (
             <div className="absolute top-full mt-2 w-full bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden max-h-96 overflow-y-auto">
               <div className="p-2">
@@ -411,7 +433,6 @@ export default function Home() {
             </div>
           )}
 
-          {/* No Results */}
           {showSuggestions && searchQuery && searchResults.length === 0 && (
             <div className="absolute top-full mt-2 w-full bg-white rounded-2xl shadow-2xl border border-slate-200 p-6 text-center">
               <div className="text-slate-400 mb-2">

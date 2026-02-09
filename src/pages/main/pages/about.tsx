@@ -69,9 +69,9 @@ const defaultData: AboutPageData = {
         description: "Sebagai perusahaan properti terintegrasi, kami menawarkan keunggulan yang membedakan kami dari kompetitor:",
         advantages: [
             { title: "Solusi End-to-End", description: "Dari konsultasi, pembangunan, hingga perawatan dalam satu ekosistem" },
-            { title: "Tim Profesional", description: "Arsitek, engineer, dan konsultan berpengalaman dengan sertifikasi internasional" },
-            { title: "Track Record Terbukti", description: "500+ unit terjual dan 98% tingkat kepuasan pelanggan" },
-            { title: "Teknologi Modern", description: "Menggunakan BIM, smart home technology, dan sustainable building practices" },
+            { title: "Tim Profesional", description: "Arsitek, engineer, and konsultan berpengalaman dengan sertifikasi internasional" },
+            { title: "Track Record Terbukti", description: "500+ unit terjual and 98% tingkat kepuasan pelanggan" },
+            { title: "Teknologi Modern", description: "Menggunakan BIM, smart home technology, and sustainable building practices" },
             { title: "Lokasi Strategis", description: "Fokus pada area premium dengan potensi pertumbuhan tinggi" },
         ],
     },
@@ -176,8 +176,8 @@ export default function AboutPageEditor() {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex-shrink-0 px-6 py-4 text-sm font-medium transition-colors whitespace-nowrap ${activeTab === tab.id
-                                    ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
-                                    : "text-slate-600 hover:bg-slate-50"
+                                ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
+                                : "text-slate-600 hover:bg-slate-50"
                                 }`}
                         >
                             <span className="mr-2">{tab.icon}</span>

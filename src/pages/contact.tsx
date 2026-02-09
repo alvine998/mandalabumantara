@@ -1,17 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PageLayout from "@/components/PageLayout";
 import Section from "@/components/Section";
 import Button from "@/components/Button";
-import { db } from "@/lib/firebase";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
+import { emailService } from "@/lib/services/email-service";
+import { companyProfileService, CompanyProfile } from "@/lib/services/company-profile-service";
 
 export default function Contact() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
+  const [profile, setProfile] = useState<CompanyProfile | null>(null);
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState("");
 
-  const socialLinks = ["Twitter", "LinkedIn", "GitHub"];
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const data = await companyProfileService.getProfile();
+        console.log(data);
+        setProfile(data);
+      } catch (err) {
+        console.error("Error loading profile:", err);
+      }
+    };
+    loadProfile();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,12 +37,10 @@ export default function Contact() {
     setError("");
 
     try {
-      await addDoc(collection(db, "contact_submissions"), {
-        name: formData.name,
-        email: formData.email,
-        message: formData.message,
-        status: "new",
-        createdAt: Timestamp.now(),
+      await emailService.sendEmail({
+        from: formData.email,
+        to: profile?.info_email || "info@mandalabumantara.com",
+        message: `${formData.name}: ${formData.message}`,
       });
 
       setSubmitted(true);
@@ -173,7 +183,7 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg mb-1">Email</h3>
-                      <p className="opacity-90">hello@mandala.com</p>
+                      <p className="opacity-90">{profile?.info_email || "info@mandalabumantara.com"}</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
@@ -194,7 +204,7 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg mb-1">Phone</h3>
-                      <p className="opacity-90">+62 21 1234 5678</p>
+                      <p className="opacity-90">{profile?.mobile_phone || "+62 21 1234 5678"}</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-4">
@@ -221,10 +231,8 @@ export default function Contact() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg mb-1">Address</h3>
-                      <p className="opacity-90">
-                        Jl. Sudirman No. 123
-                        <br />
-                        Jakarta Pusat, 10220
+                      <p className="opacity-90 whitespace-pre-wrap">
+                        {profile?.address || "Jl. Sudirman No. 123\nJakarta Pusat, 10220"}
                       </p>
                     </div>
                   </div>
@@ -235,15 +243,25 @@ export default function Contact() {
                 <h3 className="text-xl font-bold mb-4 text-slate-900">
                   Follow Us
                 </h3>
-                <div className="flex space-x-4">
-                  {socialLinks.map((social) => (
-                    <button
-                      key={social}
-                      className="px-6 py-3 rounded-lg bg-slate-100 text-slate-700 font-medium hover:bg-amber-100 hover:text-amber-500 transition-all duration-300"
-                    >
-                      {social}
-                    </button>
-                  ))}
+                <div className="flex flex-wrap gap-4">
+                  {[
+                    { name: "YouTube", url: profile?.youtube },
+                    { name: "TikTok", url: profile?.tiktok },
+                    { name: "Instagram", url: profile?.instagram },
+                    { name: "Facebook", url: profile?.facebook },
+                  ]
+                    .filter((social) => social.url)
+                    .map((social) => (
+                      <a
+                        key={social.name}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-6 py-3 rounded-lg bg-slate-100 text-slate-700 font-medium hover:bg-amber-100 hover:text-amber-500 transition-all duration-300"
+                      >
+                        {social.name}
+                      </a>
+                    ))}
                 </div>
               </div>
             </div>

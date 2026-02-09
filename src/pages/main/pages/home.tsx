@@ -9,7 +9,9 @@ interface HeroSection {
     title: string;
     titleGradient: string;
     description: string;
-    videoUrl: string;
+    videoUrl: string; // legacy support if needed
+    videoUrlMobile: string;
+    videoUrlDesktop: string;
     primaryButtonLabel: string;
     secondaryButtonLabel: string;
     secondaryButtonLink: string;
@@ -57,6 +59,8 @@ const defaultData: HomePageData = {
         titleGradient: "Build Amazing",
         description: "Create stunning web experiences with smooth transitions and beautiful design.",
         videoUrl: "https://firebasestorage.googleapis.com/v0/b/sales-midland.firebasestorage.app/o/Konten%201%20vistara.mp4?alt=media&token=adc090e2-c7e6-4f88-981e-fa5432a9ce6d",
+        videoUrlMobile: "https://firebasestorage.googleapis.com/v0/b/sales-midland.firebasestorage.app/o/Konten%201%20vistara.mp4?alt=media&token=adc090e2-c7e6-4f88-981e-fa5432a9ce6d",
+        videoUrlDesktop: "https://firebasestorage.googleapis.com/v0/b/sales-midland.firebasestorage.app/o/Konten%201%20vistara.mp4?alt=media&token=adc090e2-c7e6-4f88-981e-fa5432a9ce6d",
         primaryButtonLabel: "Start Building",
         secondaryButtonLabel: "Explore Features",
         secondaryButtonLink: "/features",
@@ -78,7 +82,7 @@ const defaultData: HomePageData = {
     },
     divisions: [
         { icon: "🏗️", title: "Developer", description: "Pengembangan dan penjualan properti berkualitas dengan lokasi strategis dan desain modern." },
-        { icon: "👷", title: "Kontraktor", description: "Jasa konstruksi profesional dengan standar kualitas tinggi, tepat waktu, dan sesuai anggaran." },
+        { icon: "👷", title: "Kontraktor", description: "Jasa konstruksi profesional with standar kualitas tinggi, tepat waktu, dan sesuai anggaran." },
         { icon: "🎨", title: "Interior", description: "Layanan desain dan konstruksi interior untuk meningkatkan nilai dan estetika properti Anda." },
         { icon: "💼", title: "Konsultan", description: "Saran ahli tentang investasi, pengembangan, dan manajemen properti yang optimal." },
         { icon: "📦", title: "Material", description: "Penyedia material bangunan berkualitas premium dengan harga kompetitif dan pengiriman cepat." },
@@ -86,7 +90,7 @@ const defaultData: HomePageData = {
     ],
     features: [
         { icon: "🎯", title: "Lokasi Strategis", description: "Properti berlokasi di area premium dengan akses mudah ke pusat bisnis, pendidikan, dan fasilitas umum." },
-        { icon: "🏆", title: "Kualitas Terjamin", description: "Standar konstruksi internasional dengan material berkualitas tinggi dan pengawasan ketat." },
+        { icon: "🏆", title: "Kualitas Terjamin", description: "Standar konstruksi internasional dengan material berkualitas tinggi and pengawasan ketat." },
         { icon: "💎", title: "Investasi Menguntungkan", description: "Nilai properti yang terus meningkat dengan ROI yang menarik untuk investor jangka panjang." },
     ],
 };
@@ -185,8 +189,8 @@ export default function HomePageEditor() {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${activeTab === tab.id
-                                    ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
-                                    : "text-slate-600 hover:bg-slate-50"
+                                ? "bg-indigo-50 text-indigo-600 border-b-2 border-indigo-600"
+                                : "text-slate-600 hover:bg-slate-50"
                                 }`}
                         >
                             <span className="mr-2">{tab.icon}</span>
@@ -210,11 +214,20 @@ export default function HomePageEditor() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-2">Video URL</label>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Desktop Video URL</label>
                                     <input
                                         type="text"
-                                        value={data.hero.videoUrl}
-                                        onChange={(e) => setData({ ...data, hero: { ...data.hero, videoUrl: e.target.value } })}
+                                        value={data.hero.videoUrlDesktop}
+                                        onChange={(e) => setData({ ...data, hero: { ...data.hero, videoUrlDesktop: e.target.value } })}
+                                        className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-slate-700 mb-2">Mobile Video URL</label>
+                                    <input
+                                        type="text"
+                                        value={data.hero.videoUrlMobile}
+                                        onChange={(e) => setData({ ...data, hero: { ...data.hero, videoUrlMobile: e.target.value } })}
                                         className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                                     />
                                 </div>

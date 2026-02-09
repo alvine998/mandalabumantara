@@ -1,23 +1,8 @@
 import { useState, useEffect } from "react";
 import AdminLayout from "@/components/AdminLayout";
 import { useToast } from "@/contexts/ToastContext";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, doc, deleteDoc, addDoc, updateDoc, query, orderBy, Timestamp } from "firebase/firestore";
+import { newsService, NewsArticle } from "@/lib/services/news-service";
 import Link from "next/link";
-
-interface NewsArticle {
-    id: string;
-    title: string;
-    slug: string;
-    excerpt: string;
-    category: string;
-    status: "draft" | "published";
-    featuredImage: string;
-    author: string;
-    createdAt: Date;
-    updatedAt: Date;
-    publishedAt: Date | null;
-}
 
 const ITEMS_PER_PAGE = 10;
 
@@ -28,20 +13,13 @@ export default function NewsList() {
     const [filterStatus, setFilterStatus] = useState<"all" | "published" | "draft">("all");
     const [currentPage, setCurrentPage] = useState(1);
     const [showModal, setShowModal] = useState(false);
-    const [newArticle, setNewArticle] = useState({ title: "", category: "news" });
+    const [newArticle, setNewArticle] = useState({ title: "" });
     const { showToast } = useToast();
 
     const loadArticles = async () => {
         try {
-            const q = query(collection(db, "news"), orderBy("createdAt", "desc"));
-            const querySnapshot = await getDocs(q);
-            const data = querySnapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data(),
-                createdAt: doc.data().createdAt?.toDate() || new Date(),
-                updatedAt: doc.data().updatedAt?.toDate() || new Date(),
-                publishedAt: doc.data().publishedAt?.toDate() || null,
-            })) as NewsArticle[];
+            setLoading(true);
+            const data = await newsService.getAllNews();
             setArticles(data);
         } catch (error) {
             console.error("Error loading articles:", error);
@@ -67,27 +45,16 @@ export default function NewsList() {
 
         try {
             const slug = generateSlug(newArticle.title);
-            const docRef = await addDoc(collection(db, "news"), {
+            const created = await newsService.createNews({
                 title: newArticle.title,
                 slug: slug,
-                excerpt: "",
-                content: "",
-                category: newArticle.category,
-                status: "draft",
-                featuredImage: "",
-                author: "Admin",
-                tags: [],
-                metaTitle: "",
-                metaDescription: "",
-                createdAt: Timestamp.now(),
-                updatedAt: Timestamp.now(),
-                publishedAt: null,
+                author: "Admin"
             });
 
             showToast("Article created!", "success");
             setShowModal(false);
-            setNewArticle({ title: "", category: "news" });
-            window.location.href = `/main/news/${docRef.id}`;
+            setNewArticle({ title: "" });
+            window.location.href = `/main/news/${created.id}`;
         } catch (error) {
             console.error("Error creating article:", error);
             showToast("Failed to create article", "error");
@@ -97,7 +64,7 @@ export default function NewsList() {
     const handleDelete = async (id: string, title: string) => {
         if (!confirm(`Delete "${title}"?`)) return;
         try {
-            await deleteDoc(doc(db, "news", id));
+            await newsService.deleteNews(id);
             showToast("Article deleted", "success");
             loadArticles();
         } catch (error) {
@@ -108,10 +75,9 @@ export default function NewsList() {
     const handleToggleStatus = async (article: NewsArticle) => {
         try {
             const newStatus = article.status === "published" ? "draft" : "published";
-            await updateDoc(doc(db, "news", article.id), {
+            await newsService.updateNews(article.id, {
                 status: newStatus,
-                publishedAt: newStatus === "published" ? Timestamp.now() : null,
-                updatedAt: Timestamp.now(),
+                published_at: newStatus === "published" ? (new Date() as any) : null,
             });
             showToast(newStatus === "published" ? "Published!" : "Unpublished", "success");
             loadArticles();
@@ -137,6 +103,12 @@ export default function NewsList() {
         setCurrentPage(1);
     }, [searchQuery, filterStatus]);
 
+    const formatDate = (timestamp: any) => {
+        if (!timestamp) return "-";
+        const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+        return date.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+    };
+
     if (loading) {
         return (
             <AdminLayout>
@@ -154,7 +126,7 @@ export default function NewsList() {
                     <h1 className="text-2xl font-bold text-slate-900">News & Articles</h1>
                     <p className="text-slate-500 mt-1">{articles.length} total articles</p>
                 </div>
-                <button onClick={() => setShowModal(true)} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg">
+                <button onClick={() => setShowModal(true)} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-all shadow-sm active:scale-95">
                     + New Article
                 </button>
             </div>
@@ -168,7 +140,7 @@ export default function NewsList() {
                             placeholder="Search articles..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full px-4 py-2 border border-slate-200 rounded-lg"
+                            className="w-full px-4 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
                         />
                     </div>
                     <div className="flex gap-2">
@@ -176,7 +148,7 @@ export default function NewsList() {
                             <button
                                 key={status}
                                 onClick={() => setFilterStatus(status)}
-                                className={`px-4 py-2 rounded-lg font-medium text-sm ${filterStatus === status ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+                                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${filterStatus === status ? "bg-indigo-600 text-white shadow-md shadow-indigo-200" : "bg-slate-50 text-slate-600 hover:bg-slate-100"}`}
                             >
                                 {status === "all" ? "All" : status === "published" ? "Published" : "Drafts"}
                             </button>
@@ -189,9 +161,10 @@ export default function NewsList() {
             <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                 {paginatedArticles.length === 0 ? (
                     <div className="p-12 text-center">
-                        <div className="text-5xl mb-4">📰</div>
+                        <div className="text-5xl mb-4 animate-bounce">📰</div>
                         <h3 className="text-lg font-semibold text-slate-900 mb-2">No articles found</h3>
-                        <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg">
+                        <p className="text-slate-500 mb-6">Start by creating your first news post.</p>
+                        <button onClick={() => setShowModal(true)} className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors">
                             + Create Article
                         </button>
                     </div>
@@ -200,53 +173,49 @@ export default function NewsList() {
                         <table className="w-full">
                             <thead className="bg-slate-50 border-b border-slate-200">
                                 <tr>
-                                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-600">Article</th>
-                                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-600 hidden md:table-cell">Category</th>
-                                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-600">Status</th>
-                                    <th className="text-left px-6 py-4 text-sm font-semibold text-slate-600 hidden lg:table-cell">Date</th>
-                                    <th className="text-right px-6 py-4 text-sm font-semibold text-slate-600">Actions</th>
+                                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Article</th>
+                                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Status</th>
+                                    <th className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider hidden lg:table-cell">Date</th>
+                                    <th className="text-right px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-100">
                                 {paginatedArticles.map((article) => (
-                                    <tr key={article.id} className="hover:bg-slate-50">
+                                    <tr key={article.id} className="hover:bg-slate-50/80 transition-colors group">
                                         <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-16 h-12 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-lg flex-shrink-0 overflow-hidden">
-                                                    {article.featuredImage ? (
-                                                        <img src={article.featuredImage} alt="" className="w-full h-full object-cover" />
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-16 h-12 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400 text-lg flex-shrink-0 overflow-hidden border border-slate-200 group-hover:border-indigo-200 transition-colors">
+                                                    {article.thumbnail ? (
+                                                        <img src={article.thumbnail} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
                                                     ) : "📰"}
                                                 </div>
-                                                <div>
-                                                    <Link href={`/main/news/${article.id}`} className="font-semibold text-slate-900 hover:text-indigo-600">
+                                                <div className="min-w-0">
+                                                    <Link href={`/main/news/${article.id}`} className="font-bold text-slate-900 hover:text-indigo-600 transition-colors block truncate">
                                                         {article.title || "Untitled"}
                                                     </Link>
-                                                    <p className="text-sm text-slate-500 truncate max-w-xs">{article.excerpt || "No excerpt"}</p>
+                                                    <p className="text-[11px] font-medium text-slate-400 uppercase mt-1 tracking-wider">By {article.author}</p>
                                                 </div>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4 hidden md:table-cell">
-                                            <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-sm capitalize">{article.category}</span>
                                         </td>
                                         <td className="px-6 py-4">
                                             <button
                                                 onClick={() => handleToggleStatus(article)}
-                                                className={`px-3 py-1 rounded-full text-xs font-medium ${article.status === "published" ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}
+                                                className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${article.status === "published" ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200" : "bg-amber-100 text-amber-700 hover:bg-amber-200"}`}
                                             >
                                                 {article.status === "published" ? "Published" : "Draft"}
                                             </button>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-slate-500 hidden lg:table-cell">
-                                            {article.publishedAt?.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" }) || article.createdAt.toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                                        <td className="px-6 py-4 text-[12px] font-medium text-slate-400 hidden lg:table-cell">
+                                            {formatDate(article.published_at || article.created_at)}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex items-center justify-end gap-2">
-                                                <Link href={`/main/news/${article.id}`} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg">
+                                            <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                                                <Link href={`/main/news/${article.id}`} className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                                     </svg>
                                                 </Link>
-                                                <button onClick={() => handleDelete(article.id, article.title)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
+                                                <button onClick={() => handleDelete(article.id, article.title)} className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                     </svg>
@@ -260,36 +229,24 @@ export default function NewsList() {
 
                         {/* Pagination */}
                         {totalPages > 1 && (
-                            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200">
-                                <p className="text-sm text-slate-500">
-                                    Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1} to {Math.min(currentPage * ITEMS_PER_PAGE, filteredArticles.length)} of {filteredArticles.length}
+                            <div className="flex items-center justify-between px-6 py-4 border-t border-slate-200 bg-slate-50/50">
+                                <p className="text-[12px] font-medium text-slate-400">
+                                    Showing <span className="text-slate-900">{(currentPage - 1) * ITEMS_PER_PAGE + 1}</span> to <span className="text-slate-900">{Math.min(currentPage * ITEMS_PER_PAGE, filteredArticles.length)}</span> of <span className="text-slate-900">{filteredArticles.length}</span>
                                 </p>
                                 <div className="flex gap-2">
                                     <button
                                         onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                         disabled={currentPage === 1}
-                                        className="px-3 py-1 border border-slate-200 rounded-lg text-sm disabled:opacity-50 hover:bg-slate-50"
+                                        className="px-4 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 disabled:opacity-50 hover:bg-slate-50 transition-all shadow-sm active:scale-95"
                                     >
-                                        Previous
+                                        &larr; Prev
                                     </button>
-                                    {Array.from({ length: totalPages }, (_, i) => i + 1).slice(
-                                        Math.max(0, currentPage - 3),
-                                        Math.min(totalPages, currentPage + 2)
-                                    ).map(page => (
-                                        <button
-                                            key={page}
-                                            onClick={() => setCurrentPage(page)}
-                                            className={`px-3 py-1 rounded-lg text-sm ${currentPage === page ? "bg-indigo-600 text-white" : "border border-slate-200 hover:bg-slate-50"}`}
-                                        >
-                                            {page}
-                                        </button>
-                                    ))}
                                     <button
                                         onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                                         disabled={currentPage === totalPages}
-                                        className="px-3 py-1 border border-slate-200 rounded-lg text-sm disabled:opacity-50 hover:bg-slate-50"
+                                        className="px-4 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-600 disabled:opacity-50 hover:bg-slate-50 transition-all shadow-sm active:scale-95"
                                     >
-                                        Next
+                                        Next &rarr;
                                     </button>
                                 </div>
                             </div>
@@ -300,39 +257,28 @@ export default function NewsList() {
 
             {/* Create Modal */}
             {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-md">
-                        <div className="p-6 border-b border-slate-200">
+                <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-300">
+                    <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="p-6 border-b border-slate-50">
                             <h2 className="text-xl font-bold text-slate-900">Create New Article</h2>
+                            <p className="text-slate-400 text-xs mt-1 font-medium uppercase tracking-wider">News Content Management</p>
                         </div>
-                        <div className="p-6 space-y-4">
+                        <div className="p-6 space-y-5">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Title *</label>
+                                <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-2">Article Title *</label>
                                 <input
+                                    autoFocus
                                     type="text"
                                     value={newArticle.title}
                                     onChange={(e) => setNewArticle({ ...newArticle, title: e.target.value })}
-                                    className="w-full px-3 py-2 border border-slate-200 rounded-lg"
-                                    placeholder="Article title..."
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-xl focus:ring-2 focus:ring-indigo-500/10 focus:border-indigo-500/50 outline-none transition-all font-medium"
+                                    placeholder="e.g. New Project Launch 2026"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                                <select
-                                    value={newArticle.category}
-                                    onChange={(e) => setNewArticle({ ...newArticle, category: e.target.value })}
-                                    className="w-full px-3 py-2 border border-slate-200 rounded-lg"
-                                >
-                                    <option value="news">News</option>
-                                    <option value="article">Article</option>
-                                    <option value="press-release">Press Release</option>
-                                    <option value="announcement">Announcement</option>
-                                </select>
-                            </div>
                         </div>
-                        <div className="p-6 border-t border-slate-200 flex justify-end gap-3">
-                            <button onClick={() => setShowModal(false)} className="px-4 py-2 text-slate-600">Cancel</button>
-                            <button onClick={handleCreate} className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg">
+                        <div className="p-6 bg-slate-50/50 flex justify-end gap-3 border-t border-slate-50">
+                            <button onClick={() => setShowModal(false)} className="px-4 py-2 text-slate-500 text-sm font-bold uppercase tracking-wider hover:text-slate-800 transition-colors">Cancel</button>
+                            <button onClick={handleCreate} className="px-8 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold uppercase tracking-wider rounded-xl transition-all shadow-lg shadow-indigo-200 active:scale-95">
                                 Create & Edit
                             </button>
                         </div>

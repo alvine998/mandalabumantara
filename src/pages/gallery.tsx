@@ -1,11 +1,36 @@
-"use client";
-
+import { useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import Section from "@/components/Section";
-import { useState } from "react";
-import Link from "next/link";
+import { galleryService, GalleryItem } from "@/lib/services/gallery-service";
 
-export default function Gallery() {
+export async function getStaticProps() {
+  try {
+    const items = await galleryService.getGalleriesByType("gallery");
+    // Serialize timestamps
+    const serializedItems = items.map(item => ({
+      ...item,
+      created_at: item.created_at?.toDate()?.toISOString() || new Date().toISOString(),
+      updated_at: item.updated_at?.toDate()?.toISOString() || new Date().toISOString(),
+    }));
+
+    return {
+      props: {
+        items: serializedItems,
+      },
+      revalidate: 60,
+    };
+  } catch (error) {
+    console.error("Error in getStaticProps:", error);
+    return {
+      props: {
+        items: [],
+      },
+      revalidate: 60,
+    };
+  }
+}
+
+export default function Gallery({ items }: { items: GalleryItem[] }) {
   const [selectedCategory, setSelectedCategory] = useState("all");
 
   const categories = [
@@ -15,84 +40,9 @@ export default function Gallery() {
     { id: "interior", label: "Interior" },
   ];
 
-  const projects = [
-    {
-      id: 1,
-      slug: "vistara-residence",
-      title: "Vistara Residence",
-      category: "residential",
-      location: "Jakarta Selatan",
-      status: "Selesai",
-      type: "Apartemen Mewah",
-      units: "120 Unit",
-      description: "Apartemen modern dengan fasilitas lengkap di lokasi strategis Jakarta Selatan",
-      gradient: "from-blue-900 to-blue-700"
-    },
-    {
-      id: 2,
-      slug: "mandala-office-park",
-      title: "Mandala Office Park",
-      category: "commercial",
-      location: "BSD City",
-      status: "Sedang Berjalan",
-      type: "Perkantoran",
-      units: "15.000 m²",
-      description: "Kompleks perkantoran modern dengan teknologi smart building",
-      gradient: "from-amber-500 to-orange-600"
-    },
-    {
-      id: 3,
-      slug: "green-valley-homes",
-      title: "Green Valley Homes",
-      category: "residential",
-      location: "Tangerang",
-      status: "Selesai",
-      type: "Perumahan",
-      units: "85 Unit",
-      description: "Perumahan ramah lingkungan dengan konsep sustainable living",
-      gradient: "from-green-600 to-emerald-700"
-    },
-    {
-      id: 4,
-      slug: "executive-suite-design",
-      title: "Executive Suite Design",
-      category: "interior",
-      location: "Jakarta Pusat",
-      status: "Selesai",
-      type: "Interior Kantor",
-      units: "500 m²",
-      description: "Desain interior kantor eksekutif dengan konsep modern minimalis",
-      gradient: "from-purple-600 to-indigo-700"
-    },
-    {
-      id: 5,
-      slug: "bumantara-mall",
-      title: "Bumantara Mall",
-      category: "commercial",
-      location: "Surabaya",
-      status: "Sedang Berjalan",
-      type: "Retail",
-      units: "25.000 m²",
-      description: "Pusat perbelanjaan modern dengan konsep lifestyle center",
-      gradient: "from-pink-600 to-rose-700"
-    },
-    {
-      id: 6,
-      slug: "luxury-villa-interior",
-      title: "Luxury Villa Interior",
-      category: "interior",
-      location: "Bali",
-      status: "Selesai",
-      type: "Interior Residensial",
-      units: "350 m²",
-      description: "Interior villa mewah dengan sentuhan tradisional Bali modern",
-      gradient: "from-cyan-600 to-blue-700"
-    },
-  ];
-
-  const filteredProjects = selectedCategory === "all"
-    ? projects
-    : projects.filter(p => p.category === selectedCategory);
+  const filteredItems = selectedCategory === "all"
+    ? items
+    : items; // No specific category field in the new payload, could add one later if requested
 
   return (
     <PageLayout activePage="gallery">
@@ -130,62 +80,58 @@ export default function Gallery() {
 
           {/* Projects Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredProjects.map((project) => (
-              <div
-                key={project.id}
-                className="group rounded-2xl overflow-hidden bg-white border border-slate-200 hover:border-amber-500 hover:shadow-2xl transition-all duration-300"
-              >
-                {/* Project Image Placeholder */}
-                <div className={`aspect-video bg-gradient-to-br ${project.gradient} relative overflow-hidden`}>
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all"></div>
-                  <div className="absolute top-4 right-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${project.status === "Selesai"
-                      ? "bg-green-500 text-white"
-                      : "bg-amber-500 text-white"
-                      }`}>
-                      {project.status}
-                    </span>
+            {filteredItems.map((item) => {
+              const mainMedia = item.images.find(img => img.type === "photo" || img.type === "video");
+              return (
+                <div
+                  key={item.id}
+                  className="group rounded-2xl overflow-hidden bg-white border border-slate-200 hover:border-amber-500 hover:shadow-2xl transition-all duration-300"
+                >
+                  <div className={`aspect-video bg-slate-900 relative overflow-hidden flex items-center justify-center`}>
+                    {mainMedia?.type === "photo" ? (
+                      <img
+                        src={mainMedia.url}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : mainMedia?.type === "video" ? (
+                      <div className="relative w-full h-full">
+                        <video
+                          src={mainMedia.url}
+                          className="w-full h-full object-cover"
+                          muted
+                          playsInline
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                          <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-6xl">🖼️</div>
+                    )}
                   </div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center text-white p-6">
-                      <div className="text-6xl mb-2">🏢</div>
-                      <p className="text-sm opacity-90">{project.type}</p>
+
+                  {/* Project Info */}
+                  <div className="p-6">
+                    <h3 className="text-2xl font-bold mb-2 text-slate-900 group-hover:text-amber-600 transition-colors">
+                      {item.name}
+                    </h3>
+                    <p className="text-slate-500 text-sm mb-4">
+                      {item.type === "gallery" ? "Documentation" : "Home Media"}
+                    </p>
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-100">
+                      <span className="text-sm font-semibold text-slate-700 uppercase tracking-widest text-[10px]">
+                        {mainMedia?.type || "media"}
+                      </span>
                     </div>
                   </div>
                 </div>
-
-                {/* Project Info */}
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-2 text-slate-900 group-hover:text-amber-600 transition-colors">
-                    {project.title}
-                  </h3>
-                  <div className="flex items-center text-sm text-slate-500 mb-3">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    {project.location}
-                  </div>
-                  <p className="text-slate-600 mb-4 leading-relaxed">
-                    {project.description}
-                  </p>
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                    <span className="text-sm font-semibold text-slate-700">
-                      {project.units}
-                    </span>
-                    <Link
-                      href={`/gallery/${project.slug}`}
-                      className="text-amber-600 hover:text-amber-700 font-medium text-sm flex items-center group-hover:translate-x-1 transition-transform"
-                    >
-                      Lihat Detail
-                      <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </Section>

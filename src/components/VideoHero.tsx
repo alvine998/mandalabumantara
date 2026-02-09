@@ -24,6 +24,8 @@ interface VideoHeroProps {
     mp4?: string;
     webm?: string;
   };
+  videoUrlMobile?: string;
+  videoUrlDesktop?: string;
 }
 
 export default function VideoHero({
@@ -35,42 +37,55 @@ export default function VideoHero({
   secondaryButton,
   showScrollIndicator = true,
   videoType = "local",
-  videoSrc = {
-    mp4: "/video-background.mp4",
-    webm: "/video-background.webm",
-  },
+  videoSrc,
+  videoUrlMobile,
+  videoUrlDesktop,
 }: VideoHeroProps) {
   const [hasWindow, setHasWindow] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
       setHasWindow(true);
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 768);
+      };
+      checkMobile();
+      window.addEventListener("resize", checkMobile);
+      return () => window.removeEventListener("resize", checkMobile);
     }
   }, []);
+
+  const currentVideoSrc = isMobile ? videoUrlMobile || videoSrc : videoUrlDesktop || videoSrc;
+  const isYouTube = typeof currentVideoSrc === "string" && (currentVideoSrc.includes("youtube.com") || currentVideoSrc.includes("youtu.be"));
+  const finalVideoType = isYouTube ? "youtube" : "local";
 
   return (
     <section className="relative h-screen w-full overflow-hidden">
       {/* Video Background */}
-      {videoType === "local" ? (
+      {finalVideoType === "local" ? (
         <video
           autoPlay
           loop
           muted
           playsInline
+          key={typeof currentVideoSrc === "string" ? currentVideoSrc : "local-video"}
           className="absolute inset-0 w-full h-full object-cover"
         >
-          {typeof videoSrc === "object" && videoSrc.mp4 && (
-            <source src={videoSrc.mp4} type="video/mp4" />
-          )}
-          {typeof videoSrc === "object" && videoSrc.webm && (
-            <source src={videoSrc.webm} type="video/webm" />
+          {typeof currentVideoSrc === "string" ? (
+            <source src={currentVideoSrc} type="video/mp4" />
+          ) : (
+            <>
+              {(currentVideoSrc as any)?.mp4 && <source src={(currentVideoSrc as any).mp4} type="video/mp4" />}
+              {(currentVideoSrc as any)?.webm && <source src={(currentVideoSrc as any).webm} type="video/webm" />}
+            </>
           )}
         </video>
       ) : (
         <div className="absolute inset-0 w-full h-full pointer-events-none select-none">
           {hasWindow && (
             <ReactPlayer
-              url={videoSrc as string}
+              url={currentVideoSrc as string}
               playing
               loop
               muted
@@ -92,14 +107,6 @@ export default function VideoHero({
               }}
             />
           )}
-          {/* Cover any potential black bars or loading states */}
-          <div className="absolute inset-0 bg-transparent scale-[1.35] origin-center w-full h-full"> 
-             {/* Note: ReactPlayer iframe sometimes has black bars. Scaling up slightly helps chop edges if needed. 
-                 But better to rely on CSS object-fit equivalent. 
-                 Since iframe cannot be object-fit easily, simple scaling technique is common. 
-                 However, above ReactPlayer style/classname tries to enforce coverage.
-             */}
-          </div>
         </div>
       )}
 
