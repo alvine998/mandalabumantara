@@ -115,19 +115,18 @@ export default function Sidebar({ className = "" }: SidebarProps) {
 
     return (
         <aside
-            className={`fixed left-0 top-0 h-screen w-64 bg-white text-slate-900 border-r border-slate-200 z-50 ${className}`}
+            className={`fixed left-0 top-0 h-screen w-64 bg-white text-slate-900 border-r border-slate-200 z-50 flex flex-col overflow-hidden ${className}`}
         >
-            <div className="p-6 border-b border-slate-200 flex items-center space-x-3">
-                {/* <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-500 to-indigo-600 flex items-center justify-center"> */}
-                {/* <span className="font-bold text-white">M</span> */}
-                <Image src="/images/logo.png" alt="Logo" width={50} height={50} />
-                {/* </div> */}
+            {/* Header */}
+            <div className="p-6 border-b border-slate-200 flex items-center space-x-3 flex-shrink-0 bg-white">
+                <Image src="/images/logo.png" alt="Logo" width={50} height={50} priority />
                 <h1 className="text-xl font-bold bg-gradient-to-r from-slate-900 to-slate-600 bg-clip-text text-transparent">
                     Bumantara
                 </h1>
             </div>
 
-            <nav className="p-4 space-y-2">
+            {/* Scrollable Navigation */}
+            <nav className="flex-1 overflow-y-auto min-h-0 p-4 space-y-2 custom-scrollbar overscroll-contain">
                 <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-4 px-2">Menu</div>
                 {links.map((link) => {
                     const isActive = router.pathname === link.href || router.pathname.startsWith(link.href + '/');
@@ -143,7 +142,7 @@ export default function Sidebar({ className = "" }: SidebarProps) {
                             <span className={`${isActive ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"} transition-colors`}>
                                 {link.icon}
                             </span>
-                            <span className="font-medium">{link.label}</span>
+                            <span className="font-medium whitespace-nowrap">{link.label}</span>
                             {isActive && (
                                 <div className="ml-auto w-1.5 h-1.5 rounded-full bg-indigo-600 shadow-[0_0_8px_currentColor]" />
                             )}
@@ -152,7 +151,8 @@ export default function Sidebar({ className = "" }: SidebarProps) {
                 })}
             </nav>
 
-            <div className="absolute bottom-0 w-full p-4 border-t border-slate-200 bg-slate-50/50 backdrop-blur-sm">
+            {/* Footer */}
+            <div className="p-4 border-t border-slate-200 bg-slate-50 flex-shrink-0">
                 <button className="flex items-center w-full space-x-3 text-slate-600 hover:text-red-600 hover:bg-red-50 px-4 py-3 rounded-lg transition-all duration-200 group">
                     <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -160,6 +160,22 @@ export default function Sidebar({ className = "" }: SidebarProps) {
                     <span className="font-medium">Sign Out</span>
                 </button>
             </div>
+
+            <style jsx>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #e2e8f0;
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #cbd5e1;
+                }
+            `}</style>
         </aside>
     );
 }
