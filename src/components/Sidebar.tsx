@@ -75,6 +75,15 @@ export default function Sidebar({ className = "" }: SidebarProps) {
             )
         },
         {
+            label: "Benefits",
+            href: "/main/benefits",
+            icon: (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-2.06 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946 2.06 3.42 3.42 0 012.219 3.847 3.42 3.42 0 00.587 2.768 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.587 2.768 3.42 3.42 0 01-2.219 3.847 3.42 3.42 0 00-1.946 2.06 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-2.06 3.42 3.42 0 01-2.219-3.847 3.42 3.42 0 00-.587-2.768 3.42 3.42 0 010-4.438 3.42 3.42 0 00.587-2.768 3.42 3.42 0 012.219-3.847z" />
+                </svg>
+            )
+        },
+        {
             label: "Organization",
             href: "/main/organizations",
             icon: (
