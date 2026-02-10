@@ -55,7 +55,7 @@ export default function Contact() {
 
   return (
     <PageLayout activePage="contact">
-      <Section padding="large">
+      <Section>
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
             <span className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 bg-clip-text text-transparent">

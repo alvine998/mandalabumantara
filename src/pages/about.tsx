@@ -302,7 +302,7 @@ export default function About() {
                           - {member.position} -
                         </p>
                         <div className="inline-block mb-4">
-                          <span className="text-sm font-bold tracking-[0.2em] uppercase">{member.description}</span>
+                          <span className="text-md">{member.description}</span>
                         </div>
                       </div>
                     </div>
