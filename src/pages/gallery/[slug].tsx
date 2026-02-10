@@ -1,302 +1,243 @@
-"use client";
-
+import { useState } from "react";
 import PageLayout from "@/components/PageLayout";
 import Section from "@/components/Section";
-import Button from "@/components/Button";
-import { useRouter } from "next/router";
+import { galleryService, GalleryItem } from "@/lib/services/gallery-service";
 import Link from "next/link";
+import { GetStaticPaths, GetStaticProps } from "next";
 
-export default function ProjectDetail() {
-  const router = useRouter();
-  const { slug } = router.query;
-
-  // Project data (in real app, this would come from API/database)
-  const projects = [
-    {
-      id: 1,
-      slug: "vistara-residence",
-      title: "Vistara Residence",
-      category: "residential",
-      location: "Jakarta Selatan",
-      status: "Selesai",
-      type: "Apartemen Mewah",
-      units: "120 Unit",
-      description: "Apartemen modern dengan fasilitas lengkap di lokasi strategis Jakarta Selatan",
-      gradient: "from-blue-900 to-blue-700",
-      fullDescription: "Vistara Residence adalah proyek apartemen mewah yang terletak di jantung Jakarta Selatan. Dengan 120 unit yang telah terjual habis, proyek ini menawarkan hunian modern dengan fasilitas kelas dunia. Setiap unit dirancang dengan cermat untuk memaksimalkan ruang dan kenyamanan, dilengkapi dengan teknologi smart home dan finishing premium.",
-      features: [
-        "Smart Home System",
-        "Infinity Pool di Rooftop",
-        "Fitness Center 24 Jam",
-        "Sky Garden & BBQ Area",
-        "24/7 Security System",
-        "Akses Langsung ke Mall"
-      ],
-      specifications: {
-        "Luas Bangunan": "35m² - 120m²",
-        "Jumlah Lantai": "25 Lantai",
-        "Tahun Selesai": "2023",
-        "Sertifikat": "SHM (Sertifikat Hak Milik)",
-        "Developer": "Mandala Bumantara",
-        "Arsitek": "PT. Arsitek Nusantara"
-      }
-    },
-    {
-      id: 2,
-      slug: "mandala-office-park",
-      title: "Mandala Office Park",
-      category: "commercial",
-      location: "BSD City",
-      status: "Sedang Berjalan",
-      type: "Perkantoran",
-      units: "15.000 m²",
-      description: "Kompleks perkantoran modern dengan teknologi smart building",
-      gradient: "from-amber-500 to-orange-600",
-      fullDescription: "Mandala Office Park adalah kompleks perkantoran premium di BSD City yang mengusung konsep smart building. Dengan total luas 15.000 m², proyek ini menawarkan ruang kantor yang fleksibel dan modern, dilengkapi dengan teknologi terkini untuk mendukung produktivitas bisnis Anda.",
-      features: [
-        "Smart Building Management System",
-        "High-Speed Internet Fiber Optic",
-        "Ample Parking Space",
-        "Food Court & Cafeteria",
-        "Meeting Room Facilities",
-        "Green Building Certified"
-      ],
-      specifications: {
-        "Total Luas": "15.000 m²",
-        "Jumlah Lantai": "12 Lantai",
-        "Target Selesai": "Q4 2025",
-        "Sertifikat": "HGB (Hak Guna Bangunan)",
-        "Developer": "Mandala Bumantara",
-        "Konsultan": "PT. Konsultan Properti Indonesia"
-      }
-    },
-    {
-      id: 3,
-      slug: "green-valley-homes",
-      title: "Green Valley Homes",
-      category: "residential",
-      location: "Tangerang",
-      status: "Selesai",
-      type: "Perumahan",
-      units: "85 Unit",
-      description: "Perumahan ramah lingkungan dengan konsep sustainable living",
-      gradient: "from-green-600 to-emerald-700",
-      fullDescription: "Green Valley Homes adalah perumahan eksklusif dengan konsep sustainable living di Tangerang. Dengan 85 unit rumah yang telah terjual, proyek ini menawarkan hunian yang harmonis dengan alam, dilengkapi dengan taman hijau, sistem pengelolaan air hujan, dan panel surya.",
-      features: [
-        "Solar Panel System",
-        "Rainwater Harvesting",
-        "Organic Garden",
-        "Jogging Track & Park",
-        "Community Center",
-        "24/7 Security"
-      ],
-      specifications: {
-        "Luas Tanah": "72m² - 200m²",
-        "Luas Bangunan": "45m² - 150m²",
-        "Tahun Selesai": "2022",
-        "Sertifikat": "SHM (Sertifikat Hak Milik)",
-        "Developer": "Mandala Bumantara",
-        "Landscape": "PT. Taman Hijau Nusantara"
-      }
-    },
-    {
-      id: 4,
-      slug: "executive-suite-design",
-      title: "Executive Suite Design",
-      category: "interior",
-      location: "Jakarta Pusat",
-      status: "Selesai",
-      type: "Interior Kantor",
-      units: "500 m²",
-      description: "Desain interior kantor eksekutif dengan konsep modern minimalis",
-      gradient: "from-purple-600 to-indigo-700",
-      fullDescription: "Executive Suite Design adalah proyek desain interior untuk kantor eksekutif seluas 500 m² di Jakarta Pusat. Mengusung konsep modern minimalis dengan sentuhan mewah, proyek ini menciptakan ruang kerja yang produktif dan representatif.",
-      features: [
-        "Custom Furniture Design",
-        "Acoustic Treatment",
-        "Smart Lighting System",
-        "Premium Materials",
-        "Ergonomic Workspace",
-        "Art Installation"
-      ],
-      specifications: {
-        "Luas Area": "500 m²",
-        "Durasi Pengerjaan": "3 Bulan",
-        "Tahun Selesai": "2023",
-        "Gaya Desain": "Modern Minimalis",
-        "Interior Designer": "Mandala Bumantara Interior",
-        "Kontraktor": "PT. Mandala Konstruksi"
-      }
-    },
-    {
-      id: 5,
-      slug: "bumantara-mall",
-      title: "Bumantara Mall",
-      category: "commercial",
-      location: "Surabaya",
-      status: "Sedang Berjalan",
-      type: "Retail",
-      units: "25.000 m²",
-      description: "Pusat perbelanjaan modern dengan konsep lifestyle center",
-      gradient: "from-pink-600 to-rose-700",
-      fullDescription: "Bumantara Mall adalah pusat perbelanjaan modern di Surabaya dengan konsep lifestyle center. Dengan total luas 25.000 m², mall ini akan menjadi destinasi belanja, kuliner, dan hiburan terlengkap di Surabaya Timur.",
-      features: [
-        "200+ Retail Outlets",
-        "Food Court & Fine Dining",
-        "Cinema Complex",
-        "Kids Playground",
-        "Rooftop Garden",
-        "Smart Parking System"
-      ],
-      specifications: {
-        "Total Luas": "25.000 m²",
-        "Jumlah Lantai": "5 Lantai",
-        "Target Selesai": "Q2 2026",
-        "Kapasitas Parkir": "800 Mobil",
-        "Developer": "Mandala Bumantara",
-        "Arsitek": "PT. Arsitek Modern Indonesia"
-      }
-    },
-    {
-      id: 6,
-      slug: "luxury-villa-interior",
-      title: "Luxury Villa Interior",
-      category: "interior",
-      location: "Bali",
-      status: "Selesai",
-      type: "Interior Residensial",
-      units: "350 m²",
-      description: "Interior villa mewah dengan sentuhan tradisional Bali modern",
-      gradient: "from-cyan-600 to-blue-700",
-      fullDescription: "Luxury Villa Interior adalah proyek desain interior villa mewah seluas 350 m² di Bali. Menggabungkan elemen tradisional Bali dengan desain kontemporer, proyek ini menciptakan ruang yang eksotis namun tetap nyaman dan fungsional.",
-      features: [
-        "Balinese Contemporary Design",
-        "Natural Stone & Wood",
-        "Infinity Pool View",
-        "Outdoor Living Space",
-        "Custom Lighting",
-        "Tropical Garden Integration"
-      ],
-      specifications: {
-        "Luas Area": "350 m²",
-        "Durasi Pengerjaan": "4 Bulan",
-        "Tahun Selesai": "2023",
-        "Gaya Desain": "Balinese Contemporary",
-        "Interior Designer": "Mandala Bumantara Interior",
-        "Furniture": "Custom Made & Imported"
-      }
-    },
-  ];
-
-  const project = projects.find(p => p.slug === slug);
-
-  if (!project) {
-    return (
-      <PageLayout>
-        <Section padding="large">
-          <div className="max-w-4xl mx-auto text-center">
-            <h1 className="text-4xl font-bold mb-4">Proyek Tidak Ditemukan</h1>
-            <p className="text-slate-600 mb-8">Maaf, proyek yang Anda cari tidak tersedia.</p>
-            <Link href="/gallery" className="text-amber-600 hover:text-amber-700 font-medium">
-              ← Kembali ke Galeri
-            </Link>
-          </div>
-        </Section>
-      </PageLayout>
-    );
+export const getStaticPaths: GetStaticPaths = async () => {
+  try {
+    const items = await galleryService.getGalleriesByType("gallery");
+    const paths = items.map((item) => ({
+      params: { slug: item.id },
+    }));
+    return { paths, fallback: "blocking" };
+  } catch {
+    return { paths: [], fallback: "blocking" };
   }
+};
+
+export const getStaticProps: GetStaticProps = async ({ params }) => {
+  try {
+    const id = params?.slug as string;
+    const item = await galleryService.getGalleryById(id);
+
+    if (!item) {
+      return { notFound: true };
+    }
+
+    const serialized = {
+      ...item,
+      created_at: item.created_at?.toDate()?.toISOString() || new Date().toISOString(),
+      updated_at: item.updated_at?.toDate()?.toISOString() || new Date().toISOString(),
+    };
+
+    return {
+      props: { item: serialized },
+      revalidate: 60,
+    };
+  } catch (error) {
+    console.error("Error fetching gallery item:", error);
+    return { notFound: true };
+  }
+};
+
+export default function GalleryDetail({ item }: { item: GalleryItem }) {
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const photos = item.images.filter((img) => img.type === "photo");
+  const videos = item.images.filter((img) => img.type === "video");
+  const allMedia = [...photos, ...videos];
+
+  const openLightbox = (index: number) => setLightboxIndex(index);
+  const closeLightbox = () => setLightboxIndex(null);
+
+  const goNext = () => {
+    if (lightboxIndex !== null) {
+      setLightboxIndex((lightboxIndex + 1) % allMedia.length);
+    }
+  };
+
+  const goPrev = () => {
+    if (lightboxIndex !== null) {
+      setLightboxIndex((lightboxIndex - 1 + allMedia.length) % allMedia.length);
+    }
+  };
 
   return (
-    <PageLayout>
-      {/* Hero Section */}
+    <PageLayout activePage="gallery">
+      {/* Lightbox */}
+      {lightboxIndex !== null && (
+        <div
+          className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center"
+          onClick={closeLightbox}
+        >
+          {/* Close Button */}
+          <button
+            onClick={closeLightbox}
+            className="absolute top-6 right-6 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors z-10"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          {/* Previous Button */}
+          {allMedia.length > 1 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); goPrev(); }}
+              className="absolute left-4 sm:left-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors z-10"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
+
+          {/* Next Button */}
+          {allMedia.length > 1 && (
+            <button
+              onClick={(e) => { e.stopPropagation(); goNext(); }}
+              className="absolute right-4 sm:right-8 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors z-10"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          )}
+
+          {/* Media Content */}
+          <div
+            className="max-w-5xl max-h-[85vh] px-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {allMedia[lightboxIndex]?.type === "video" ? (
+              <video
+                src={allMedia[lightboxIndex].url}
+                controls
+                autoPlay
+                className="max-w-full max-h-[85vh] rounded-lg"
+              />
+            ) : (
+              <img
+                src={allMedia[lightboxIndex]?.url}
+                alt={`${item.name} - ${lightboxIndex + 1}`}
+                className="max-w-full max-h-[85vh] object-contain rounded-lg"
+              />
+            )}
+          </div>
+
+          {/* Counter */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white/70 text-sm font-medium">
+            {lightboxIndex + 1} / {allMedia.length}
+          </div>
+        </div>
+      )}
+
+      {/* Header */}
       <Section padding="large">
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb */}
-          <div className="mb-8 flex items-center text-sm text-slate-600">
-            <Link href="/" className="hover:text-amber-600">Home</Link>
+          <div className="mb-8 flex items-center text-sm text-slate-500">
+            <Link href="/" className="hover:text-amber-600 transition-colors">Home</Link>
             <span className="mx-2">/</span>
-            <Link href="/gallery" className="hover:text-amber-600">Gallery</Link>
+            <Link href="/gallery" className="hover:text-amber-600 transition-colors">Gallery</Link>
             <span className="mx-2">/</span>
-            <span className="text-slate-900">{project.title}</span>
+            <span className="text-slate-900 font-medium">{item.name}</span>
           </div>
 
-          {/* Project Header */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
-            {/* Project Image */}
-            <div className={`aspect-video rounded-3xl bg-gradient-to-br ${project.gradient} relative overflow-hidden shadow-2xl`}>
-              <div className="absolute inset-0 bg-black/20"></div>
-              <div className="absolute top-6 right-6">
-                <span className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                  project.status === "Selesai"
-                    ? "bg-green-500 text-white"
-                    : "bg-amber-500 text-white"
-                }`}>
-                  {project.status}
-                </span>
-              </div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center text-white p-6">
-                  <div className="text-8xl mb-4">🏢</div>
-                  <p className="text-xl opacity-90">{project.type}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Project Info */}
+          {/* Title */}
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-12">
             <div>
-              <h1 className="text-4xl sm:text-5xl font-bold mb-4 text-slate-900">
-                {project.title}
+              <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-3">
+                {item.name}
               </h1>
-              <div className="flex items-center text-lg text-slate-600 mb-6">
-                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                {project.location}
-              </div>
-              <p className="text-lg text-slate-600 leading-relaxed mb-6">
-                {project.fullDescription}
-              </p>
-              <div className="flex gap-4">
-                <Button variant="primary" href="/contact" className="px-8 py-3">
-                  Hubungi Kami
-                </Button>
-                <Button variant="secondary" href="/gallery" className="px-8 py-3">
-                  Lihat Proyek Lain
-                </Button>
+              <div className="flex items-center gap-4 text-slate-500">
+                {photos.length > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                    {photos.length} Foto
+                  </span>
+                )}
+                {videos.length > 0 && (
+                  <span className="flex items-center gap-1.5">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                    {videos.length} Video
+                  </span>
+                )}
               </div>
             </div>
+            <Link
+              href="/gallery"
+              className="text-amber-600 hover:text-amber-700 font-medium transition-colors flex items-center gap-2 self-start"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Kembali ke Galeri
+            </Link>
           </div>
-        </div>
-      </Section>
 
-      {/* Features Section */}
-      <Section background="light">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold mb-8 text-slate-900">Fitur & Fasilitas</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {project.features.map((feature, index) => (
-              <div key={index} className="flex items-center p-4 bg-white rounded-xl border border-slate-200">
-                <span className="text-amber-500 mr-3 text-xl">✓</span>
-                <span className="text-slate-700 font-medium">{feature}</span>
+          {/* Photos Grid */}
+          {photos.length > 0 && (
+            <div className="mb-16">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {photos.map((photo, index) => (
+                  <button
+                    key={index}
+                    onClick={() => openLightbox(index)}
+                    className="group relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2"
+                  >
+                    <img
+                      src={photo.url}
+                      alt={`${item.name} - Foto ${index + 1}`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300 flex items-center justify-center">
+                      <div className="w-12 h-12 rounded-full bg-white/0 group-hover:bg-white/90 flex items-center justify-center transition-all duration-300 scale-50 group-hover:scale-100 opacity-0 group-hover:opacity-100">
+                        <svg className="w-5 h-5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
-      </Section>
+            </div>
+          )}
 
-      {/* Specifications Section */}
-      <Section>
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold mb-8 text-slate-900">Spesifikasi Proyek</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {Object.entries(project.specifications).map(([key, value]) => (
-              <div key={key} className="p-6 bg-white rounded-xl border border-slate-200">
-                <div className="text-sm text-slate-500 mb-1">{key}</div>
-                <div className="text-lg font-semibold text-slate-900">{value}</div>
+          {/* Videos Grid */}
+          {videos.length > 0 && (
+            <div>
+              <h2 className="text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+                Video
+              </h2>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {videos.map((video, index) => (
+                  <div
+                    key={index}
+                    className="rounded-xl overflow-hidden bg-slate-900 border border-slate-200"
+                  >
+                    <video
+                      src={video.url}
+                      controls
+                      className="w-full aspect-video object-cover"
+                      preload="metadata"
+                    />
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {allMedia.length === 0 && (
+            <div className="py-20 text-center bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+              <div className="text-6xl mb-4 opacity-20">🖼️</div>
+              <p className="text-slate-500 font-medium">Belum ada media untuk galeri ini.</p>
+            </div>
+          )}
         </div>
       </Section>
 
@@ -305,26 +246,24 @@ export default function ProjectDetail() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="p-12 rounded-3xl bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 text-white">
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              Tertarik dengan Proyek Ini?
+              Tertarik dengan Proyek Kami?
             </h2>
             <p className="text-lg opacity-90 mb-6">
               Hubungi tim kami untuk informasi lebih lanjut dan jadwalkan kunjungan lokasi
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                variant="primary"
+              <a
                 href="/contact"
-                className="px-8 py-4 text-lg bg-white text-blue-900 hover:bg-white/90"
+                className="px-8 py-4 text-lg bg-white text-blue-900 hover:bg-white/90 rounded-full font-semibold transition-all inline-block"
               >
                 Konsultasi Gratis
-              </Button>
-              <Button
-                variant="outline"
+              </a>
+              <a
                 href="/gallery"
-                className="px-8 py-4 text-lg border-white text-white hover:bg-white/10"
+                className="px-8 py-4 text-lg border-2 border-white text-white hover:bg-white/10 rounded-full font-semibold transition-all inline-block"
               >
                 Lihat Proyek Lain
-              </Button>
+              </a>
             </div>
           </div>
         </div>

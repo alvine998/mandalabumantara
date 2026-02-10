@@ -18,6 +18,7 @@ export interface OrganizationMember {
   name: string;
   description: string;
   photo: string;
+  position: string;
   created_at: Timestamp;
   updated_at: Timestamp;
 }
