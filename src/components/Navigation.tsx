@@ -2,15 +2,27 @@ import { useState, useEffect } from "react";
 import SwupLink from "./SwupLink";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { subCompanyService, SubCompany } from "@/lib/services/sub-company-service";
 
 export default function Navigation() {
   const router = useRouter();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [subCompanies, setSubCompanies] = useState<SubCompany[]>([]);
 
   // Get current path for active states
   const currentPath = typeof window !== 'undefined' ? window.location.pathname : '/';
   const showScrolledStyle = isScrolled || mobileMenuOpen;
+
+  // Helper function to slugify company names
+  const slugify = (text: string) => {
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,6 +31,19 @@ export default function Navigation() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Fetch sub-companies
+  useEffect(() => {
+    const fetchSubCompanies = async () => {
+      try {
+        const companies = await subCompanyService.getAllSubCompanies();
+        setSubCompanies(companies);
+      } catch (error) {
+        console.error("Error fetching sub-companies:", error);
+      }
+    };
+    fetchSubCompanies();
   }, []);
 
   // Lock body scroll when mobile menu is open
@@ -40,12 +65,14 @@ export default function Navigation() {
     { href: "/contact", label: "Contact", key: "contact", isActive: currentPath === "/contact" },
   ];
 
-  const projectLinks = [
-    { href: "/mandala-bumi-nusantara", label: "Mandala Bumi Nusantara" },
-    { href: "/vistara", label: "Vistara" },
-  ];
+  // Generate project links from sub-companies
+  const projectLinks = subCompanies.map(company => ({
+    href: `/${slugify(company.name)}`,
+    label: company.name,
+  }));
 
-  const isProjectActive = currentPath.startsWith("/mandala-bumi-nusantara") || currentPath.startsWith("/vistara");
+  // Check if any project page is active
+  const isProjectActive = projectLinks.some(project => currentPath.startsWith(project.href));
 
   return (
     <nav
