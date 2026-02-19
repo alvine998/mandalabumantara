@@ -37,8 +37,9 @@ interface OverviewSection {
 }
 
 interface Division {
+  id: string;
   icon: string;
-  title: string;
+  name: string;
   description: string;
 }
 
@@ -83,12 +84,12 @@ const defaultData: HomePageData = {
     ],
   },
   divisions: [
-    { icon: "🏗️", title: "Developer", description: "Pengembangan dan penjualan properti berkualitas dengan lokasi strategis and desain modern." },
-    { icon: "👷", title: "Kontraktor", description: "Jasa konstruksi profesional dengan standar kualitas tinggi, tepat waktu, dan sesuai anggaran." },
-    { icon: "🎨", title: "Interior", description: "Layanan desain dan konstruksi interior untuk meningkatkan nilai dan estetika properti Anda." },
-    { icon: "💼", title: "Konsultan", description: "Saran ahli tentang investasi, pengembangan, dan manajemen properti yang optimal." },
-    { icon: "📦", title: "Material", description: "Penyedia material bangunan berkualitas premium dengan harga kompetitif dan pengiriman cepat." },
-    { icon: "🏠", title: "Home Service", description: "Layanan perawatan dan perbaikan rumah untuk kenyamanan hunian modern Anda." },
+    { id: "1", icon: "🏗️", name: "Developer", description: "Pengembangan dan penjualan properti berkualitas dengan lokasi strategis and desain modern." },
+    { id: "2", icon: "👷", name: "Kontraktor", description: "Jasa konstruksi profesional dengan standar kualitas tinggi, tepat waktu, dan sesuai anggaran." },
+    { id: "3", icon: "🎨", name: "Interior", description: "Layanan desain dan konstruksi interior untuk meningkatkan nilai dan estetika properti Anda." },
+    { id: "4", icon: "💼", name: "Konsultan", description: "Saran ahli tentang investasi, pengembangan, dan manajemen properti yang optimal." },
+    { id: "5", icon: "📦", name: "Material", description: "Penyedia material bangunan berkualitas premium dengan harga kompetitif dan pengiriman cepat." },
+    { id: "6", icon: "🏠", name: "Home Service", description: "Layanan perawatan dan perbaikan rumah untuk kenyamanan hunian modern Anda." },
   ],
   features: [
     { icon: "🎯", title: "Lokasi Strategis", description: "Properti berlokasi di area premium dengan akses mudah ke pusat bisnis, pendidikan, dan fasilitas umum." },
@@ -134,6 +135,18 @@ export default function Home() {
           }
         }
 
+        // Fetch Divisions from Division Service
+        const { divisionService } = await import("@/lib/services/division-service");
+        const divisions = await divisionService.getAllDivisions();
+        if (divisions && divisions.length > 0) {
+          homeData.divisions = divisions.map(d => ({
+            id: d.id,
+            icon: d.icon,
+            name: d.name,
+            description: d.description
+          }));
+        }
+
         setData(homeData);
       } catch (error) {
         console.error("Error loading data:", error);
@@ -167,7 +180,7 @@ export default function Home() {
     { title: "Contact", description: "Hubungi kami", href: "/contact", category: "Halaman" },
     { title: "Mandala Bumi Nusantara", description: "Filosofi dan unit bisnis", href: "/mandala-bumi-nusantara", category: "Proyek" },
     { title: "Vistara", description: "Proyek properti terintegrasi", href: "/vistara", category: "Proyek" },
-    ...data.divisions.map(d => ({ title: d.title, description: d.description, href: "/vistara", category: "Divisi Bisnis" })),
+    ...data.divisions.map(d => ({ title: d.name, description: d.description, href: "/vistara", category: "Divisi Bisnis" })),
     ...data.features.map(f => ({ title: f.title, description: f.description, href: "#", category: "Keunggulan" })),
   ];
 
@@ -253,7 +266,7 @@ export default function Home() {
       {/* Company Overview Section */}
       <Section padding="large">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center max-w-4xl mx-auto mb-16">
+          <div className="text-center max-w-4xl mx-auto mb-2">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
               <span className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 bg-clip-text text-transparent">
                 {data.overview.title}
@@ -277,7 +290,7 @@ export default function Home() {
           </div>
 
           {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+          {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
             {data.overview.stats.map((stat, idx) => (
               <div key={idx} className="text-center p-6 bg-white rounded-2xl shadow-sm border border-slate-200 hover:shadow-lg transition-all">
                 <div className="text-4xl font-bold bg-gradient-to-r from-blue-900 to-amber-500 bg-clip-text text-transparent mb-2">
@@ -286,7 +299,7 @@ export default function Home() {
                 <div className="text-slate-600 font-medium">{stat.label}</div>
               </div>
             ))}
-          </div>
+          </div> */}
         </div>
       </Section>
 
@@ -304,8 +317,14 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 px-4 sm:px-0">
             {data.divisions.map((division, index) => (
               <div key={index} className="group p-8 rounded-2xl bg-white border border-slate-200 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
-                <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">{division.icon}</div>
-                <h3 className="text-2xl font-bold mb-3 text-slate-900">{division.title}</h3>
+                <div className="w-16 h-16 relative mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center p-2 group-hover:scale-110 transition-transform duration-300">
+                  {division.icon?.startsWith("http") ? (
+                    <img src={division.icon} alt={division.name} className="w-full h-full object-contain" />
+                  ) : (
+                    <span className="text-4xl">{division.icon || "🏗️"}</span>
+                  )}
+                </div>
+                <h3 className="text-2xl font-bold mb-3 text-slate-900 group-hover:text-amber-600 transition-colors">{division.name}</h3>
                 <p className="text-slate-600 leading-relaxed">
                   {division.description}
                 </p>
