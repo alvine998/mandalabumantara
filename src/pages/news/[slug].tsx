@@ -188,6 +188,17 @@ export default function NewsDetail({ article, relatedArticles }: { article: News
                                 {publishedDate.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })}
                             </time>
 
+                            {/* Keywords Above Title */}
+                            {article.keywords && article.keywords.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {article.keywords.map((keyword) => (
+                                        <span key={`header-${keyword}`} className="text-sm font-medium text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-100 uppercase tracking-wider">
+                                            {keyword}
+                                        </span>
+                                    ))}
+                                </div>
+                            )}
+
                             {/* Title */}
                             <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-6 leading-tight">
                                 {article.title}
@@ -233,10 +244,13 @@ export default function NewsDetail({ article, relatedArticles }: { article: News
                             {/* Tags/Keywords */}
                             {article.keywords && article.keywords.length > 0 && (
                                 <div className="mt-10 pt-8 border-t border-slate-200">
-                                    <h3 className="text-sm font-medium text-slate-500 mb-3">Keywords:</h3>
-                                    <div className="flex flex-wrap gap-2">
+                                    <h3 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-widest flex items-center gap-2">
+                                        <span className="w-8 h-[2px] bg-amber-500"></span>
+                                        Keywords
+                                    </h3>
+                                    <div className="flex flex-wrap gap-3">
                                         {article.keywords.map((keyword) => (
-                                            <span key={keyword} className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-sm">
+                                            <span key={`footer-${keyword}`} className="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-medium hover:border-amber-500 hover:text-amber-600 hover:bg-amber-50/50 transition-all cursor-default shadow-sm">
                                                 #{keyword}
                                             </span>
                                         ))}

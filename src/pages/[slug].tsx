@@ -6,6 +6,7 @@ import Image from "next/image";
 import { subCompanyService, SubCompany } from "@/lib/services/sub-company-service";
 import { divisionService, Division } from "@/lib/services/division-service";
 import { galleryService, GalleryItem } from "@/lib/services/gallery-service";
+import { FacebookIcon, InstagramIcon, YoutubeIcon } from "lucide-react";
 
 interface SubCompanyPageProps {
     company: SubCompany;
@@ -47,7 +48,7 @@ export default function SubCompanyPage({ company, divisions, projects }: SubComp
                         <div>
                             <div className="inline-block mb-4 px-4 py-2 bg-amber-50 rounded-full border border-amber-200">
                                 <span className="text-sm font-medium text-amber-700">
-                                    🏢 Mandala Bumantara Company
+                                    Mandala Bumantara Project
                                 </span>
                             </div>
                             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
@@ -85,91 +86,6 @@ export default function SubCompanyPage({ company, divisions, projects }: SubComp
                             )}
                         </div>
                     </div>
-
-                    {/* Contact Information */}
-                    <div className="mb-24">
-                        <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-8 text-center">Informasi Kontak</h2>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {company.email && (
-                                <div className="p-6 rounded-2xl bg-white border-2 border-slate-100 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
-                                    <div className="text-4xl mb-4">📧</div>
-                                    <h3 className="text-lg font-bold text-slate-900 mb-2">Email</h3>
-                                    <a href={`mailto:${company.email}`} className="text-amber-600 hover:text-amber-700 break-all">
-                                        {company.email}
-                                    </a>
-                                </div>
-                            )}
-                            {company.mobile_phone && (
-                                <div className="p-6 rounded-2xl bg-white border-2 border-slate-100 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
-                                    <div className="text-4xl mb-4">📱</div>
-                                    <h3 className="text-lg font-bold text-slate-900 mb-2">Telepon</h3>
-                                    <a href={`tel:${company.mobile_phone}`} className="text-amber-600 hover:text-amber-700">
-                                        {company.mobile_phone}
-                                    </a>
-                                </div>
-                            )}
-                            {company.address && (
-                                <div className="p-6 rounded-2xl bg-white border-2 border-slate-100 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
-                                    <div className="text-4xl mb-4">📍</div>
-                                    <h3 className="text-lg font-bold text-slate-900 mb-2">Alamat</h3>
-                                    <p className="text-slate-600">{company.address}</p>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Social Media */}
-                    {(company.facebook || company.instagram || company.tiktok || company.youtube) && (
-                        <div className="mb-24">
-                            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-8 text-center">Ikuti Kami</h2>
-                            <div className="flex justify-center gap-4 flex-wrap">
-                                {company.facebook && (
-                                    <a
-                                        href={company.facebook}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="p-4 rounded-xl bg-blue-50 border-2 border-blue-100 hover:border-blue-500 hover:shadow-lg transition-all duration-300 flex items-center gap-3"
-                                    >
-                                        <span className="text-3xl">📘</span>
-                                        <span className="font-semibold text-blue-700">Facebook</span>
-                                    </a>
-                                )}
-                                {company.instagram && (
-                                    <a
-                                        href={company.instagram}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="p-4 rounded-xl bg-pink-50 border-2 border-pink-100 hover:border-pink-500 hover:shadow-lg transition-all duration-300 flex items-center gap-3"
-                                    >
-                                        <span className="text-3xl">📷</span>
-                                        <span className="font-semibold text-pink-700">Instagram</span>
-                                    </a>
-                                )}
-                                {company.tiktok && (
-                                    <a
-                                        href={company.tiktok}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="p-4 rounded-xl bg-slate-50 border-2 border-slate-100 hover:border-slate-500 hover:shadow-lg transition-all duration-300 flex items-center gap-3"
-                                    >
-                                        <span className="text-3xl">🎵</span>
-                                        <span className="font-semibold text-slate-700">TikTok</span>
-                                    </a>
-                                )}
-                                {company.youtube && (
-                                    <a
-                                        href={company.youtube}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="p-4 rounded-xl bg-red-50 border-2 border-red-100 hover:border-red-500 hover:shadow-lg transition-all duration-300 flex items-center gap-3"
-                                    >
-                                        <span className="text-3xl">📺</span>
-                                        <span className="font-semibold text-red-700">YouTube</span>
-                                    </a>
-                                )}
-                            </div>
-                        </div>
-                    )}
 
                     {/* Business Divisions */}
                     {divisions.length > 0 && (
@@ -241,6 +157,38 @@ export default function SubCompanyPage({ company, divisions, projects }: SubComp
                         </div>
                     )}
 
+                    {/* Contact Information */}
+                    <div className="mb-24">
+                        <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-8 text-center">Informasi Kontak</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {company.email && (
+                                <div className="p-6 rounded-2xl bg-white border-2 border-slate-100 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
+                                    <div className="text-4xl mb-4">📧</div>
+                                    <h3 className="text-lg font-bold text-slate-900 mb-2">Email</h3>
+                                    <a href={`mailto:${company.email}`} className="text-amber-600 hover:text-amber-700 break-all">
+                                        {company.email}
+                                    </a>
+                                </div>
+                            )}
+                            {company.mobile_phone && (
+                                <div className="p-6 rounded-2xl bg-white border-2 border-slate-100 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
+                                    <div className="text-4xl mb-4">📱</div>
+                                    <h3 className="text-lg font-bold text-slate-900 mb-2">Telepon</h3>
+                                    <a href={`tel:${company.mobile_phone}`} className="text-amber-600 hover:text-amber-700">
+                                        {company.mobile_phone}
+                                    </a>
+                                </div>
+                            )}
+                            {company.address && (
+                                <div className="p-6 rounded-2xl bg-white border-2 border-slate-100 hover:border-amber-500 hover:shadow-xl transition-all duration-300">
+                                    <div className="text-4xl mb-4">📍</div>
+                                    <h3 className="text-lg font-bold text-slate-900 mb-2">Alamat</h3>
+                                    <p className="text-slate-600">{company.address}</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
                     {/* CTA Section */}
                     <div className="p-12 sm:p-16 rounded-3xl bg-gradient-to-r from-blue-950 via-blue-900 to-blue-800 text-white text-center shadow-2xl">
                         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Tertarik Bekerja Sama?</h2>
@@ -264,6 +212,60 @@ export default function SubCompanyPage({ company, divisions, projects }: SubComp
                             </Button>
                         </div>
                     </div>
+
+
+                    {/* Social Media */}
+                    {(company.facebook || company.instagram || company.tiktok || company.youtube) && (
+                        <div className="mt-20">
+                            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 mb-8 text-center">Ikuti Kami</h2>
+                            <div className="flex justify-center gap-4 flex-wrap">
+                                {company.facebook && (
+                                    <a
+                                        href={company.facebook}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-4 rounded-xl bg-blue-50 border-2 border-blue-100 hover:border-blue-500 hover:shadow-lg transition-all duration-300 flex items-center gap-3"
+                                    >
+                                        <FacebookIcon />
+                                        <span className="font-semibold text-blue-700">Facebook</span>
+                                    </a>
+                                )}
+                                {company.instagram && (
+                                    <a
+                                        href={company.instagram}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-4 rounded-xl bg-pink-50 border-2 border-pink-100 hover:border-pink-500 hover:shadow-lg transition-all duration-300 flex items-center gap-3"
+                                    >
+                                        <InstagramIcon />
+                                        <span className="font-semibold text-pink-700">Instagram</span>
+                                    </a>
+                                )}
+                                {company.tiktok && (
+                                    <a
+                                        href={company.tiktok}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-4 rounded-xl bg-slate-50 border-2 border-slate-100 hover:border-slate-500 hover:shadow-lg transition-all duration-300 flex items-center gap-3"
+                                    >
+                                        <span className="text-3xl">🎵</span>
+                                        <span className="font-semibold text-slate-700">TikTok</span>
+                                    </a>
+                                )}
+                                {company.youtube && (
+                                    <a
+                                        href={company.youtube}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="p-4 rounded-xl bg-red-50 border-2 border-red-100 hover:border-red-500 hover:shadow-lg transition-all duration-300 flex items-center gap-3"
+                                    >
+                                        <YoutubeIcon />
+                                        <span className="font-semibold text-red-700">YouTube</span>
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </Section>
         </PageLayout>
