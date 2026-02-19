@@ -64,7 +64,7 @@ export default function Footer() {
                 {profile?.name || "Mandala Bumantara"}
               </span>
             </div>
-            <p className="text-slate-600 mb-6 leading-relaxed max-w-sm">
+            <p className="text-slate-600 mb-6 text-xs leading-relaxed max-w-sm">
               {profile?.description || "Building amazing web experiences with smooth transitions and beautiful design. Powered by modern technologies."}
             </p>
             <div className="flex space-x-3">

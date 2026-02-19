@@ -117,14 +117,21 @@ export default function Home() {
 
         // Fetch latest Home Video from Gallery Service
         const { galleryService } = await import("@/lib/services/gallery-service");
+        // Use "Home" as per database schema
         const homeGalleries = await galleryService.getGalleriesByType("Home");
-        if (homeGalleries.length > 0) {
-          const latestHome = homeGalleries[0];
-          const desktopVideo = latestHome.images.find(img => img.type === "video_desktop")?.url;
-          const mobileVideo = latestHome.images.find(img => img.type === "video_mobile")?.url;
 
-          if (desktopVideo) homeData.hero.videoUrlDesktop = desktopVideo;
-          if (mobileVideo) homeData.hero.videoUrlMobile = mobileVideo;
+        if (homeGalleries && homeGalleries.length > 0) {
+          // Sort by updated_at or created_at to get the latest
+          const latestHome = homeGalleries[0];
+
+          if (latestHome.images && latestHome.images.length > 0) {
+            const desktopVideo = latestHome.images.find(img => img.type === "video_desktop")?.url;
+            const mobileVideo = latestHome.images.find(img => img.type === "video_mobile")?.url;
+
+            if (desktopVideo) homeData.hero.videoUrlDesktop = desktopVideo;
+            if (mobileVideo) homeData.hero.videoUrlMobile = mobileVideo;
+            else if (desktopVideo) homeData.hero.videoUrlMobile = desktopVideo;
+          }
         }
 
         setData(homeData);

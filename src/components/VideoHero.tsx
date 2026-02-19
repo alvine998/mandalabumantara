@@ -115,18 +115,18 @@ export default function VideoHero({
 
       {/* Content Overlay */}
       <div className="relative z-10 h-full flex items-center justify-center">
-        {/* <div className="text-center max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
-          {badge && (
-            <div className="inline-block mb-6 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-white/50 shadow-lg">
-              <span className="text-sm font-medium text-indigo-700">
+        <div className="text-center max-w-5xl mx-auto px-6 sm:px-8 lg:px-12">
+          {/* {badge && (
+            <div className="inline-block mb-6 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 shadow-xl">
+              <span className="text-sm font-medium text-white tracking-wide">
                 {badge}
               </span>
             </div>
-          )}
-          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+          )} */}
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
             {titleGradient ? (
               <>
-                <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient drop-shadow-lg">
+                <span className="bg-gradient-to-r from-amber-400 via-amber-300 to-amber-200 bg-clip-text text-transparent drop-shadow-sm">
                   {titleGradient}
                 </span>
                 <br />
@@ -136,7 +136,7 @@ export default function VideoHero({
               <span className="text-white drop-shadow-2xl">{title}</span>
             )}
           </h1>
-          <p className="text-xl sm:text-2xl lg:text-3xl text-white mb-10 leading-relaxed drop-shadow-lg font-medium">
+          <p className="text-lg sm:text-2xl lg:text-3xl text-white/90 mb-10 leading-relaxed drop-shadow-lg font-medium max-w-3xl mx-auto">
             {description}
           </p>
           {(primaryButton || secondaryButton) && (
@@ -144,7 +144,7 @@ export default function VideoHero({
               {primaryButton && (
                 <button
                   onClick={primaryButton.onClick}
-                  className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full font-semibold text-lg hover:shadow-2xl hover:shadow-indigo-500/50 transition-all duration-300 transform hover:scale-105 backdrop-blur-sm"
+                  className="px-8 py-4 bg-amber-500 text-slate-900 rounded-full font-bold text-lg hover:bg-amber-400 hover:shadow-2xl hover:shadow-amber-500/30 transition-all duration-300 transform hover:scale-105"
                 >
                   {primaryButton.label}
                 </button>
@@ -152,14 +152,14 @@ export default function VideoHero({
               {secondaryButton && (
                 <SwupLink
                   href={secondaryButton.href}
-                  className="px-8 py-4 bg-white/90 backdrop-blur-sm text-slate-900 rounded-full font-semibold text-lg border-2 border-white/50 hover:bg-white transition-all duration-300 transform hover:scale-105 shadow-lg"
+                  className="px-8 py-4 bg-white/10 backdrop-blur-md text-white rounded-full font-semibold text-lg border-2 border-white/30 hover:bg-white/20 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 >
                   {secondaryButton.label}
                 </SwupLink>
               )}
             </div>
           )}
-        </div> */}
+        </div>
       </div>
 
       {/* Scroll Indicator */}

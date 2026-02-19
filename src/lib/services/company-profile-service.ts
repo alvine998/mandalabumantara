@@ -1,7 +1,12 @@
 import {
   doc,
+  collection,
   getDoc,
+  getDocs,
   setDoc,
+  query,
+  where,
+  limit,
   serverTimestamp,
   Timestamp,
 } from "firebase/firestore";
@@ -35,6 +40,20 @@ export const companyProfileService = {
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
       return docSnap.data() as CompanyProfile;
+    }
+    return null;
+  },
+
+  // Get Profile by Name
+  async getProfileByName(name: string): Promise<CompanyProfile | null> {
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      where("name", "==", name),
+      limit(1),
+    );
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      return querySnapshot.docs[0].data() as CompanyProfile;
     }
     return null;
   },
